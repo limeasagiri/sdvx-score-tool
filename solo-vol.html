@@ -20,11 +20,12 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-deep);
             color: var(--text-main);
-            margin: 0; padding: 10px;
+            margin: 0; padding: 8px;
             background-image: 
                 linear-gradient(var(--line-sub) 1px, transparent 1px),
                 linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
             background-size: 30px 30px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* --- UI Components --- */
@@ -46,50 +47,74 @@
             background: var(--panel-bg); border: 1px solid var(--army-green);
             padding: 12px; margin-bottom: 10px;
             clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+            position: relative;
         }
-        h3 { font-size: 10px; color: var(--neon-lime); margin: 0 0 10px 0; letter-spacing: 1px; border-left: 3px solid var(--neon-lime); padding-left: 8px; }
+        h3 { font-size: 10px; color: var(--neon-lime); margin: 0 0 12px 0; letter-spacing: 1px; border-left: 3px solid var(--neon-lime); padding-left: 8px; }
 
         .tab-container { display: flex; gap: 6px; margin-bottom: 10px; }
         .tab {
-            flex: 1; padding: 10px 5px; background: rgba(45, 59, 45, 0.3); border: 1px solid var(--army-green);
+            flex: 1; padding: 12px 5px; background: rgba(45, 59, 45, 0.3); border: 1px solid var(--army-green);
             color: #889988; font-size: 11px; text-align: center; cursor: pointer; font-weight: bold;
             clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 0 100%);
+            transition: 0.2s;
         }
         .tab.active { background: var(--army-green); color: var(--neon-lime); border-color: var(--neon-lime); }
 
         input, select {
             background: #000; color: #fff; border: 1px solid var(--army-green);
-            padding: 8px; font-size: 14px; width: 100%; box-sizing: border-box; outline: none;
+            padding: 8px; font-size: 16px; width: 100%; box-sizing: border-box; outline: none; border-radius: 4px;
         }
         input:focus { border-color: var(--neon-lime); }
         label { font-size: 9px; color: var(--neon-lime); display: block; margin-bottom: 4px; opacity: 0.8; }
 
+        .clear-btn-main { background: var(--army-green); border: 1px solid var(--neon-lime); color: var(--neon-lime); border-radius: 4px; font-size: 9px; padding: 2px 6px; position: absolute; right: 12px; top: 10px; cursor: pointer; }
+
         /* --- Result Display --- */
         .result-box { text-align: center; border-left: 4px solid var(--neon-lime); }
-        .vf-display { margin: 15px 0; }
-        .vf-display .fixed { font-size: 50px; font-weight: bold; color: #fff; font-family: monospace; }
-        .vf-display .decimal { font-size: 30px; color: #fff; opacity: 0.9; font-family: monospace; }
+        
+        .dual-display { display: flex; justify-content: space-around; margin-bottom: 15px; border-bottom: 1px dashed var(--army-green); padding-bottom: 10px; }
+        .dual-item { display: flex; flex-direction: column; }
+        .dual-item .label { color: var(--neon-lime); font-size: 9px; margin-bottom: 2px; }
+        .dual-item .val { font-family: monospace; font-size: 18px; color: #fff; font-weight: bold; }
+
+        .vf-mode-tabs { background: rgba(0,0,0,0.4); padding: 4px; border-radius: 4px; margin-bottom: 15px; display: flex; gap: 4px; }
+        .vf-mode-tabs .tab { padding: 6px 2px; font-size: 9px; clip-path: none; height: auto; display: flex; flex-direction: column; }
+        .vf-mode-tabs .vf-sub { font-size: 8px; opacity: 0.6; }
+
+        .vf-display { margin: 10px 0; display: flex; align-items: baseline; justify-content: center; }
+        .vf-display .fixed { font-size: 55px; font-weight: bold; color: #fff; font-family: monospace; line-height: 1; }
+        .vf-display .decimal { font-size: 40px; color: #fff; opacity: 0.9; font-family: monospace; line-height: 1; }
         
         .medal-badge {
             display: inline-block; padding: 4px 15px; border-radius: 2px;
-            font-size: 12px; font-weight: bold; margin-bottom: 10px;
+            font-size: 11px; font-weight: bold; margin-bottom: 10px;
             clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
         }
         .badge-puc { background: var(--puc-yellow); color: #000; }
         .badge-uc { background: var(--uc-pink); color: #fff; }
         .badge-normal { background: var(--army-green); color: var(--neon-lime); }
 
-        .next-vf-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
-        .next-vf-table td { padding: 8px 4px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); }
-        .row-label { color: var(--neon-lime); opacity: 0.6; font-size: 9px; }
-        .row-val { font-family: monospace; color: #fff; font-weight: bold; }
+        /* --- Analysis Table --- */
+        .next-vf-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px; table-layout: fixed; }
+        .next-vf-table td { padding: 6px 2px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
+        .row-label { color: var(--neon-lime); opacity: 0.6; font-size: 8px; }
+        .row-val { font-family: monospace; color: #fff; font-weight: bold; font-size: 11px; }
+        .row-medal { color: #889988; font-size: 8px; padding-top: 10px !important; }
+        .row-vf-val { color: var(--neon-lime); font-weight: bold; font-size: 11px; font-family: monospace; }
+        .target-note { font-size: 8px; color: #667766; margin-top: 8px; display: none; }
+
+        /* --- Result Detail Table --- */
+        .result-table { width: 100%; font-size: 10px; text-align: center; border-spacing: 1px; border-collapse: separate; }
+        .result-table th { color: var(--neon-lime); padding-bottom: 5px; font-weight: normal; font-size: 9px; }
+        .result-table td { position: relative; background: rgba(0,0,0,0.3); height: 44px; }
+        .result-table input { width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-family: monospace; font-size: 16px; }
+        .label-cell { background: var(--army-green) !important; color: var(--neon-lime) !important; font-weight: bold; font-size: 9px; }
+        .btn-x { position: absolute; right: 2px; top: 2px; width: 14px; height: 14px; background: rgba(255,255,255,0.1); color: #666; font-size: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .disabled-cell { background: rgba(0,0,0,0.6) !important; }
 
         .hidden { display: none; }
-        .result-table { width: 100%; font-size: 10px; text-align: center; }
-        .result-table th { color: var(--neon-lime); padding-bottom: 5px; }
-        .result-table td { padding: 2px; }
-        .label-cell { background: var(--army-green); color: var(--neon-lime); font-weight: bold; }
-        
+        .error-msg { color: #ff5555; font-size: 11px; margin-bottom: 10px; font-weight: bold; display: none; }
+
         /* Drawer Menu */
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); display: none; z-index: 999; }
         .drawer { position: fixed; top: 0; right: -280px; width: 280px; height: 100vh; background: var(--bg-deep); border-left: 2px solid var(--neon-lime); z-index: 1000; transition: 0.3s; padding: 60px 0; }
@@ -109,20 +134,20 @@
 
 <div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="drawer" id="drawer">
-    <a href="index.html" class="menu-item">TACTICAL HUB (TOP)</a>
-    <a href="vol-to-score.html" class="menu-item">目標スコア算出</a>
-    <a href="hayami.html" class="menu-item">スコア・VF早見表</a>
+    <a href="https://otogetool.wixsite.com/vol-calculator" target="_blank" class="menu-item">TACTICAL HUB (TOP)</a>
+    <a href="https://otogetool.wixsite.com/vol-calculator/vol-to-score" target="_blank" class="menu-item">目標スコア算出</a>
+    <a href="https://otogetool.wixsite.com/vol-calculator/vol-hayami" target="_blank" class="menu-item">スコア・VF早見表</a>
     <div class="menu-item current">単曲VOLFORCE算出</div>
-    <a href="/rule" class="menu-item">利用規約</a>
-    <a href="/contact" class="menu-item">お問い合わせ</a>
+    <a href="https://otogetool.wixsite.com/vol-calculator/rule" target="_blank" class="menu-item">利用規約</a>
+    <a href="https://otogetool.wixsite.com/vol-calculator/contact" target="_blank" class="menu-item">お問い合わせ</a>
 </div>
 
 <div class="card">
-    <h3>DATA INPUT</h3>
+    <h3>CORE DATA</h3>
     <div style="display: flex; gap: 8px;">
         <div style="flex: 1;">
             <label>LEVEL</label>
-            <input type="number" id="lv" value="18.5" min="1.0" max="20.9" step="0.1" oninput="calc()">
+            <input type="number" id="lv" value="18.5" min="1.0" max="20.9" step="0.1" inputmode="decimal" oninput="calc()">
         </div>
         <div style="flex: 1.5;">
             <label>MEDAL (MANUAL)</label>
@@ -137,41 +162,68 @@
 </div>
 
 <div id="section-score" class="card">
+    <button class="clear-btn-main" onclick="clearField('score_input');calc()">CLEAR</button>
     <label>TARGET SCORE</label>
-    <input type="number" id="score_input" value="10000000" oninput="calc()">
+    <input type="number" id="score_input" value="10000000" inputmode="numeric" oninput="calc()">
 </div>
 
 <div id="section-detail" class="card hidden">
+    <button class="clear-btn-main" onclick="clearAllDetail()">ALL CLEAR</button>
+    <h3>DETAILED BREAKDOWN</h3>
     <table class="result-table">
         <thead>
             <tr><th style="width:20%">TYPE</th><th>CHIP</th><th>LONG</th><th>TSUMAMI</th></tr>
         </thead>
         <tbody>
             <tr><td class="label-cell">S-CRIT</td>
-                <td><input type="number" id="sc_c" value="0" oninput="calcDetail()"></td>
-                <td><input type="number" id="sc_l" value="0" oninput="calcDetail()"></td>
-                <td><input type="number" id="sc_t" value="0" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('sc_c');calcDetail()">×</div><input type="number" id="sc_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('sc_l');calcDetail()">×</div><input type="number" id="sc_l" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('sc_t');calcDetail()">×</div><input type="number" id="sc_t" value="0" inputmode="numeric" oninput="calcDetail()"></td>
             </tr>
             <tr><td class="label-cell">CRIT</td>
-                <td><input type="number" id="c_c" value="0" oninput="calcDetail()"></td>
-                <td><input type="number" id="c_l" value="0" oninput="calcDetail()"></td>
-                <td><input type="number" id="c_t" value="0" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('c_c');calcDetail()">×</div><input type="number" id="c_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('c_l');calcDetail()">×</div><input type="number" id="c_l" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('c_t');calcDetail()">×</div><input type="number" id="c_t" value="0" inputmode="numeric" oninput="calcDetail()"></td>
             </tr>
             <tr><td class="label-cell">NEAR</td>
-                <td><input type="number" id="n_c" value="0" oninput="calcDetail()"></td>
-                <td style="background:#111"></td><td style="background:#111"></td>
+                <td><div class="btn-x" onclick="clearField('n_c');calcDetail()">×</div><input type="number" id="n_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td class="disabled-cell"></td><td class="disabled-cell"></td>
             </tr>
             <tr><td class="label-cell">ERROR</td>
-                <td><input type="number" id="e_c" value="0" oninput="calcDetail()"></td>
-                <td><input type="number" id="e_l" value="0" oninput="calcDetail()"></td>
-                <td><input type="number" id="e_t" value="0" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('e_c');calcDetail()">×</div><input type="number" id="e_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('e_l');calcDetail()">×</div><input type="number" id="e_l" value="0" inputmode="numeric" oninput="calcDetail()"></td>
+                <td><div class="btn-x" onclick="clearField('e_t');calcDetail()">×</div><input type="number" id="e_t" value="0" inputmode="numeric" oninput="calcDetail()"></td>
             </tr>
         </tbody>
     </table>
 </div>
 
 <div class="card result-box">
-    <h3>VOLFORCE ANALYSIS</h3>
+    <div id="error-display" class="error-msg">CHAIN ERROR DETECTED</div>
+    
+    <div class="dual-display">
+        <div class="dual-item">
+            <span class="label">TOTAL CHAIN</span>
+            <span id="resChain" class="val">---</span>
+        </div>
+        <div class="dual-item">
+            <span class="label">FINAL SCORE</span>
+            <span id="resScore" class="val">0</span>
+        </div>
+    </div>
+
+    <div class="vf-mode-tabs">
+        <div id="vfmode-total" class="tab active" onclick="switchVFMode('total')">
+            <span>総合VF</span><span id="label-total-val" class="vf-sub">(0.000)</span>
+        </div>
+        <div id="vfmode-single" class="tab" onclick="switchVFMode('single')">
+            <span>公式単曲</span><span id="label-single-val" class="vf-sub">(0)</span>
+        </div>
+        <div id="vfmode-vaddict" class="tab" onclick="switchVFMode('vaddict')">
+            <span>Tool</span><span id="label-vaddict-val" class="vf-sub">(0.0)</span>
+        </div>
+    </div>
+
     <div id="medalBadge" class="medal-badge badge-normal">---</div>
     
     <div class="vf-display">
@@ -179,24 +231,51 @@
         <span id="resVF_decimal" class="decimal"></span>
     </div>
 
-    <div id="resRank" style="color: var(--neon-lime); font-weight: bold; letter-spacing: 2px;">---</div>
+    <div id="resRank" style="color: var(--neon-lime); font-weight: bold; letter-spacing: 2px; font-size: 14px;">---</div>
 
     <table class="next-vf-table">
         <tr>
-            <td class="row-label">NEXT SCORE</td>
-            <td class="row-val" id="nextScore">---</td>
+            <td class="row-label">TARGET</td>
             <td class="row-label">GAP</td>
+            <td class="row-label">削減NEAR</td>
+            <td class="row-label">許容NEAR</td>
+        </tr>
+        <tr>
+            <td class="row-val" id="nextScore">---</td>
             <td class="row-val" id="gap">---</td>
+            <td class="row-val" id="resReduceNear">---</td>
+            <td class="row-val" id="resAllowNear">---</td>
+        </tr>
+        <tr><td colspan="4" id="targetNote" class="target-note">※クリアランク達成を優先した目標です。</td></tr>
+        <tr>
+            <td class="row-medal">PUC</td>
+            <td class="row-medal">UC</td>
+            <td class="row-medal">MAXXIVE</td>
+            <td class="row-medal">EXCESSIVE</td>
+        </tr>
+        <tr>
+            <td class="row-vf-val" id="nvf_puc">---</td>
+            <td class="row-vf-val" id="nvf_uc">---</td>
+            <td class="row-vf-val" id="nvf_mx">---</td>
+            <td class="row-vf-val" id="nvf_ex">---</td>
         </tr>
     </table>
 </div>
 
 <script>
     let inputMode = 'score';
+    let vfDisplayMode = 'total';
+
     function toggleMenu() {
         document.getElementById('drawer').classList.toggle('open');
         document.getElementById('overlay').style.display = 
             document.getElementById('overlay').style.display === 'block' ? 'none' : 'block';
+    }
+
+    function clearField(id) { document.getElementById(id).value = ''; }
+    function clearAllDetail() {
+        ['sc_c', 'sc_l', 'sc_t', 'c_c', 'c_l', 'c_t', 'n_c', 'e_c', 'e_l', 'e_t'].forEach(id => document.getElementById(id).value = '');
+        calcDetail();
     }
 
     function switchTab(newMode) {
@@ -225,6 +304,12 @@
         select.value = list.some(o => o.v === prev) ? prev : '1.04';
     }
 
+    function switchVFMode(mode) {
+        vfDisplayMode = mode;
+        ['total', 'single', 'vaddict'].forEach(t => document.getElementById(`vfmode-${t}`).classList.toggle('active', t === mode));
+        calc();
+    }
+
     function getVal(id) { return parseInt(document.getElementById(id).value) || 0; }
 
     function calcDetail() {
@@ -240,22 +325,7 @@
         calc();
     }
 
-    function calc() {
-        const lv = parseFloat(document.getElementById('lv').value) || 0;
-        const score = Math.min(10000000, getVal('score_input'));
-        let medal = parseFloat(document.getElementById('medal').value);
-        
-        // 自動メダル判別
-        const er = getVal('e_c') + getVal('e_l') + getVal('e_t');
-        const ne = getVal('n_c');
-        if (score >= 10000000) medal = 1.1;
-        else if (inputMode === 'detail' && er === 0) medal = (ne === 0) ? 1.1 : 1.06;
-
-        const badge = document.getElementById('medalBadge');
-        if (medal >= 1.1) { badge.className = "medal-badge badge-puc"; badge.innerText = "PUC"; }
-        else if (medal >= 1.06) { badge.className = "medal-badge badge-uc"; badge.innerText = "UC"; }
-        else { badge.className = "medal-badge badge-normal"; badge.innerText = document.getElementById('medal').options[document.getElementById('medal').selectedIndex]?.text || "---"; }
-
+    function getVFData(lv, score, medal) {
         let g = 0.8;
         if (score >= 9900000) g = 1.05;
         else if (score >= 9800000) g = 1.02;
@@ -263,23 +333,104 @@
         else if (score >= 9500000) g = 0.97;
         else if (score >= 9300000) g = 0.94;
         else if (score >= 9000000) g = 0.91;
-        
+        else if (score >= 8700000) g = 0.88;
+        else if (score >= 7500000) g = 0.85;
+        else if (score >= 6500000) g = 0.82;
         const baseVF = lv * (score / 10000000) * g * medal;
         const officialInt = Math.floor(baseVF * 20);
-        const finalVF = (officialInt / 20).toFixed(3);
+        return { floored05: officialInt / 20, officialInt: officialInt };
+    }
 
-        const parts = finalVF.split('.');
+    function getMinScoreForVF(targetInt, lv, medal) {
+        const grades = [1.05, 1.02, 1.00, 0.97, 0.94, 0.91, 0.88, 0.85, 0.82, 0.80];
+        const thresholds = [9900000, 9800000, 9700000, 9500000, 9300000, 9000000, 8700000, 7500000, 6500000, 0];
+        for (let i = 0; i < grades.length; i++) {
+            const s = targetInt / (lv * grades[i] * medal * 20) * 10000000;
+            if (s >= thresholds[i]) return s;
+        }
+        return 10000001;
+    }
+
+    function calc() {
+        const lv = parseFloat(document.getElementById('lv').value) || 0;
+        const score = Math.min(10000000, getVal('score_input'));
+        document.getElementById('resScore').innerText = score.toLocaleString();
+
+        const sc = getVal('sc_c') + getVal('sc_l') + getVal('sc_t');
+        const cr = getVal('c_c') + getVal('c_l') + getVal('c_t');
+        const ne = getVal('n_c');
+        const er = getVal('e_c') + getVal('e_l') + getVal('e_t');
+        const totalChain = sc + cr + ne + er;
+        document.getElementById('resChain').innerText = totalChain > 0 ? totalChain.toLocaleString() : "---";
+
+        let medal = parseFloat(document.getElementById('medal').value);
+        if (inputMode === 'detail' && totalChain > 0) {
+            if (er === 0 && ne === 0) medal = 1.1;
+            else if (er === 0) medal = 1.06;
+        } else if (score >= 10000000) medal = 1.1;
+
+        const badge = document.getElementById('medalBadge');
+        if (medal >= 1.1) { badge.className = "medal-badge badge-puc"; badge.innerText = "RESULT: PUC"; }
+        else if (medal >= 1.06) { badge.className = "medal-badge badge-uc"; badge.innerText = "RESULT: UC"; }
+        else {
+            badge.className = "medal-badge badge-normal";
+            const names = {"1.04":"MAXXIVE", "1.02":"EXCESSIVE", "1.0":"EFFECTIVE"};
+            badge.innerText = "RESULT: " + (names[medal.toString()] || "---");
+        }
+
+        const currentVF = getVFData(lv, score, medal);
+        document.getElementById('label-total-val').innerText = `(${currentVF.floored05.toFixed(3)})`;
+        document.getElementById('label-single-val').innerText = `(${currentVF.officialInt})`;
+        document.getElementById('label-vaddict-val').innerText = `(${(currentVF.officialInt / 10).toFixed(1)})`;
+
+        let displayVal = "";
+        if (vfDisplayMode === 'total') displayVal = currentVF.floored05.toFixed(3);
+        else if (vfDisplayMode === 'single') displayVal = currentVF.officialInt.toString();
+        else displayVal = (currentVF.officialInt / 10).toFixed(1);
+
+        const parts = displayVal.split('.');
         document.getElementById('resVF_fixed').innerText = parts[0];
-        document.getElementById('resVF_decimal').innerText = "." + parts[1];
+        document.getElementById('resVF_decimal').innerText = parts[1] ? "." + parts[1] : "";
 
-        const classes = [{n:"Sienna",b:0},{n:"Cobalt",b:200},{n:"Dandelion",b:240},{n:"Cyan",b:280},{n:"Scarlet",b:300},{n:"Coral",b:320},{n:"Argento",b:340},{n:"Eldora",b:360},{n:"Crimson",b:380},{n:"Imperial",b:400}];
-        let cls = classes.reverse().find(c => officialInt >= c.b) || classes[0];
-        document.getElementById('resRank').innerText = cls.n.toUpperCase();
+        const classTable = [{n:"Sienna",b:0,s:50},{n:"Cobalt",b:200,s:10},{n:"Dandelion",b:240,s:10},{n:"Cyan",b:280,s:5},{n:"Scarlet",b:300,s:5},{n:"Coral",b:320,s:5},{n:"Argento",b:340,s:5},{n:"Eldora",b:360,s:5},{n:"Crimson",b:380,s:5},{n:"Imperial",b:400,s:20}];
+        let cls = [...classTable].reverse().find(c => currentVF.officialInt >= c.b) || classTable[0];
+        const roman = ["I", "II", "III", "IV"];
+        const subIdx = Math.min(3, Math.floor((currentVF.officialInt - cls.b) / cls.s));
+        document.getElementById('resRank').innerText = `${cls.n.toUpperCase()} ${roman[subIdx]}`;
 
-        // 次のVFへの目安（簡易版）
-        const nextTarget = Math.ceil(getVal('score_input') / 10000) * 10000 + 10000;
-        document.getElementById('nextScore').innerText = nextTarget.toLocaleString();
-        document.getElementById('gap').innerText = "+" + (nextTarget - score).toLocaleString();
+        // NEXT分析
+        const rankBorders = [{s:9900000,n:"RANK S"},{s:9800000,n:"RANK AAA+"},{s:9700000,n:"RANK AAA"},{s:9500000,n:"RANK AA+"},{s:9300000,n:"RANK AA"}];
+        const nextRank = rankBorders.find(b => b.s > score);
+        const nextVFScore = Math.ceil(getMinScoreForVF(currentVF.officialInt + 1, lv, medal));
+        const nearWeight = totalChain > 0 ? (5000000 / totalChain) : 2500;
+
+        let targetScoreValue = 0, targetName = "", showNote = false;
+        if (score < 10000000) {
+            if (nextRank && (nextVFScore >= nextRank.s - nearWeight)) { targetScoreValue = nextRank.s; targetName = nextRank.n; showNote = true; }
+            else if (nextVFScore <= 10000000 && nextVFScore > score) { targetScoreValue = nextVFScore; targetName = nextVFScore.toLocaleString(); }
+            else if (nextRank) { targetScoreValue = nextRank.s; targetName = nextRank.n; }
+            else { targetScoreValue = 10000000; targetName = "PUC"; }
+        }
+
+        document.getElementById('nextScore').innerText = score < 10000000 ? targetName : "---";
+        document.getElementById('gap').innerText = score < 10000000 ? (targetScoreValue - score).toLocaleString() : "---";
+        document.getElementById('targetNote').style.display = showNote ? "block" : "none";
+
+        const formatVF = (d) => (vfDisplayMode==='total' ? d.floored05.toFixed(3) : (vfDisplayMode==='single' ? d.officialInt : (d.officialInt/10).toFixed(1)));
+        document.getElementById('nvf_puc').innerText = medal >= 1.1 ? "---" : formatVF(getVFData(lv, 10000000, 1.1));
+        document.getElementById('nvf_uc').innerText = medal >= 1.06 ? "---" : formatVF(getVFData(lv, score, 1.06));
+        document.getElementById('nvf_mx').innerText = medal >= 1.04 ? "---" : formatVF(getVFData(lv, score, 1.04));
+        document.getElementById('nvf_ex').innerText = medal >= 1.02 ? "---" : formatVF(getVFData(lv, score, 1.02));
+
+        if (totalChain > 0) {
+            const currentPenalty = (ne * 0.5) + (er * 1.0);
+            const targetPenaltyLimit = (10000000 - targetScoreValue) / (10000000 / totalChain);
+            const neededReduction = targetName === "PUC" ? (ne + er*2) : Math.max(0, Math.ceil((currentPenalty - targetPenaltyLimit) / 0.5));
+            document.getElementById('resReduceNear').innerText = (score < 10000000 && neededReduction > 0) ? neededReduction : "---";
+
+            const penaltyLimit = (10000000 - (targetScoreValue || score)) / (10000000 / totalChain);
+            document.getElementById('resAllowNear').innerText = er === 0 ? ne : Math.floor(penaltyLimit / 0.5);
+        }
     }
 
     updateMedalSelect();
