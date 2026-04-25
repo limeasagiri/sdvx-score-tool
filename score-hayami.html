@@ -41,11 +41,17 @@
         background: rgba(0, 0, 0, 0.5);
     }
     .app-title { 
-        font-size: 14px; 
+        font-size: 15px; 
         font-weight: bold; 
         color: var(--neon-lime); 
         text-shadow: 0 0 10px var(--neon-lime);
-        letter-spacing: 2px;
+        letter-spacing: 1px;
+    }
+    .app-title small {
+        font-size: 9px;
+        margin-left: 4px;
+        font-weight: normal;
+        opacity: 0.8;
     }
 
     .menu-btn {
@@ -102,7 +108,7 @@
     }
     .control-row { display: flex; gap: 10px; }
     .control-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-    label.title { font-size: 9px; color: var(--neon-lime); font-weight: bold; letter-spacing: 1px; }
+    label.title { font-size: 9px; color: var(--neon-lime); font-weight: bold; letter-spacing: 0.5px; }
     
     select, input {
         padding: 8px; border: 1px solid var(--army-green);
@@ -145,7 +151,7 @@
 <body>
 
 <div class="header-bar">
-    <div class="app-title">▼ TARGET-SCORE-MATRIX ∇</div>
+    <div class="app-title">スコア・VF早見表 <small>ver.∇</small></div>
     <div class="menu-btn" onclick="toggleMenu()">
         <span></span><span></span><span></span>
     </div>
@@ -157,7 +163,7 @@
     <div class="menu-label">NAVIGATOR</div>
     <a href="index.html" class="menu-item">TACTICAL HUB (TOP)</a>
     <a href="vol-to-score.html" class="menu-item">目標スコア算出</a>
-    <div class="menu-item current" onclick="toggleMenu()">目標スコア早見表</div>
+    <div class="menu-item current" onclick="toggleMenu()">スコア・VF早見表</div>
     <a href="solo-vol.html" class="menu-item">単曲VF計算</a>
     <a href="vol-hayami.html" class="menu-item">VF到達目安表</a>
     <div class="menu-label">INFORMATION</div>
@@ -175,7 +181,7 @@
     <div class="controls-inner">
         <div class="control-row">
             <div class="control-group">
-                <label class="title">VF RANK / CLASS</label>
+                <label class="title">目標VF CLASS / Rank</label>
                 <div style="display: flex; gap: 4px;">
                     <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
                         <option value="1">1 Sienna</option>
@@ -198,7 +204,7 @@
                 </div>
             </div>
             <div class="control-group">
-                <label class="title">BASE MEDAL</label>
+                <label class="title">参照MEDAL</label>
                 <select id="medal" onchange="render()">
                     <option value="PUC">PUC</option>
                     <option value="UC">UC</option>
@@ -210,7 +216,7 @@
         </div>
         <div class="control-row">
             <div class="control-group">
-                <label class="title" id="targetLabel">TARGET VOLFORCE</label>
+                <label class="title" id="targetLabel">目標VF(手動入力)</label>
                 <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
                 <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
             </div>
@@ -318,7 +324,6 @@ function getRequired(lv, targetVF, medal, isBaseMedal) {
         if (aaaPlusScore >= 9800000 && aaaPlusScore < 9900000) return { rank: (aaaPlusScore === 9800000) ? "AAA+" : aaaPlusScore.toLocaleString(), medal: medal, vf: targetVF, priority: 10, isAAA: true };
         if (sScore >= 9900000 && sScore < 10000000) return { rank: (sScore === 9900000) ? "S" : sScore.toLocaleString(), medal: medal, vf: targetVF, priority: 20, isAAA: false };
         
-        // 修正: AAA+基準のVF算出に1.02を使用
         if (aaaPlusScore < 9800000 && (Math.floor(lv * 1.02 * m * 20) / 20) >= targetVF) {
             return { rank: "AAA+", medal: medal, vf: Math.floor(lv * 1.02 * m * 0.98 * 20) / 20, priority: 15, isAAA: true };
         }
@@ -383,4 +388,3 @@ window.onload = render;
 </script>
 </body>
 </html>
- 
