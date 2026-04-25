@@ -25,7 +25,7 @@
             background-size: 40px 40px;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* 固定表示のために高さを指定 */
+            height: 100vh;
             overflow: hidden;
         }
 
@@ -102,15 +102,34 @@
         label { display: block; font-size: 0.7rem; color: var(--neon-lime); margin-bottom: 3px; }
         select, input { width: 100%; padding: 8px; background: #000; border: 1px solid var(--army-green); color: white; margin-bottom: 8px; font-size: 0.9rem; }
         
+        /* --- ラジオボタン本体のみ非表示にする設定 --- */
         .mode-selector { display: flex; gap: 4px; margin-bottom: 10px; }
-        .mode-selector label { flex: 1; text-align: center; background: #1a1a1a; padding: 6px 2px; border: 1px solid var(--army-green); cursor: pointer; font-size: 0.65rem; }
-        .mode-selector input:checked + span { color: var(--neon-lime); font-weight: bold; }
-        .mode-selector label:has(input:checked) { border-color: var(--neon-lime); background: rgba(176, 255, 46, 0.1); }
+        .mode-selector input[type="radio"] { display: none; } /* ラジオボタンの丸を消す */
+        
+        .mode-selector label { 
+            flex: 1; 
+            text-align: center; 
+            background: #1a1a1a; 
+            padding: 8px 2px; 
+            border: 1px solid var(--army-green); 
+            cursor: pointer; 
+            font-size: 0.65rem; 
+            color: var(--text-main);
+            transition: 0.2s;
+        }
+        
+        /* 選択されている時のスタイル */
+        .mode-selector label:has(input:checked) { 
+            border-color: var(--neon-lime); 
+            background: rgba(176, 255, 46, 0.2); 
+            color: var(--neon-lime);
+            font-weight: bold;
+        }
 
-        /* --- テーブル改修: タイトル固定 --- */
+        /* --- テーブルタイトル固定 --- */
         .table-wrapper {
             flex-grow: 1;
-            overflow: auto; /* ここでスクロール */
+            overflow: auto;
             border: 1px solid var(--army-green);
             background: rgba(0, 0, 0, 0.8);
         }
@@ -121,8 +140,8 @@
             background: var(--army-green);
             color: var(--neon-lime);
             padding: 12px;
-            position: sticky; /* 固定設定 */
-            top: 0;           /* 上部に固定 */
+            position: sticky;
+            top: 0;
             z-index: 10;
             border-bottom: 1px solid var(--neon-lime);
         }
@@ -176,7 +195,10 @@
             <div style="display: flex; gap: 8px;">
                 <div style="flex: 2;">
                     <select id="classSel" onchange="updateByDropdown()">
-                        <option value="1 Sienna">1 Sienna</option><option value="2 Cobalt">2 Cobalt</option><option value="10 Imperial" selected>10 Imperial</option>
+                        <option value="1 Sienna">1 Sienna</option><option value="2 Cobalt">2 Cobalt</option><option value="3 Dandelion">3 Dandelion</option>
+                        <option value="4 Cyan">4 Cyan</option><option value="5 Scarlet">5 Scarlet</option><option value="6 Coral">6 Coral</option>
+                        <option value="7 Argento">7 Argento</option><option value="8 Eldora">8 Eldora</option><option value="9 Crimson">9 Crimson</option>
+                        <option value="10 Imperial" selected>10 Imperial</option>
                     </select>
                 </div>
                 <div style="flex: 1;">
@@ -229,7 +251,6 @@ const VF_MAP = {
 
 let currentStandardVF = 20.000;
 
-// --- [計算ロジック: 変更なし] ---
 function solveFromSheetFormula(targetVF, lv, mCoef) {
     if (targetVF <= 0) return 0;
     const calc = (rCoef) => (targetVF * 10000000) / (lv * rCoef * mCoef);
@@ -302,7 +323,6 @@ function render() {
         const uc  = solveFromSheetFormula(vf, lv, 1.06);
         const canReachPUC = (lv * 1.05 * 1.10) >= (vf - 0.0001);
         
-        // --- 改修点: すべてが --- の場合はこのLvを表示しない ---
         if (!eff && !exc && !max && !uc && !canReachPUC) return;
 
         let pucText = "---", pucCls = "val-none";
@@ -341,4 +361,3 @@ updateByDropdown();
 </script>
 </body>
 </html>
- 
