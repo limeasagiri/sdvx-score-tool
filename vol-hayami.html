@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+    :root {
+        --bg-color: #0f0f0f;
+        --card-bg: #1a1a1a;
+        --accent-color: #00ffcc;
+        --text-main: #e0e0e0;
+        --text-dim: #999;
+        --border-color: #333;
+        --input-bg: #252525;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, sans-serif;
+        background: var(--bg-color);
+        color: var(--text-main);
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* --- タイトルロゴ --- */
+    .app-header {
+        background: rgba(15, 15, 15, 0.9);
+        backdrop-filter: blur(10px);
+        height: 50px;
+        display: flex;
+        align-items: center;
+        padding: 0 15px;
+        border-bottom: 1px solid var(--border-color);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        box-sizing: border-box;
+    }
+
+    .app-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--accent-color);
+        text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        letter-spacing: 0.05em;
+    }
+    
+    /* --- ハンバーガーメニュー --- */
+    .menu-trigger {
+        margin-left: auto;
+        background: var(--input-bg);
+        color: var(--accent-color);
+        border: 1px solid var(--border-color);
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 18px;
+    }
+    
+    .side-menu {
+        position: fixed;
+        top: 0;
+        right: -280px;
+        width: 260px;
+        height: 100%;
+        background: var(--card-bg);
+        z-index: 1002;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 20px;
+        box-sizing: border-box;
+        border-left: 1px solid var(--border-color);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    }
+    
+    .side-menu.open { right: 0; }
+    
+    .menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        z-index: 1001;
+    }
+    
+    .menu-overlay.show { display: block; }
+    
+    .menu-title {
+        color: var(--accent-color);
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        letter-spacing: 0.1em;
+    }
+    
+    .menu-list { list-style: none; padding: 0; margin: 0; }
+    .menu-list li { margin-bottom: 10px; }
+    
+    .menu-list a {
+        color: var(--text-main);
+        text-decoration: none;
+        font-size: 13px;
+        display: block;
+        padding: 12px;
+        border-radius: 8px;
+        background: #222;
+        transition: 0.2s;
+    }
+    
+    .menu-list a:hover { background: #2a2a2a; color: var(--accent-color); }
+    .menu-list a.active {
+        background: rgba(0, 255, 204, 0.1);
+        color: var(--accent-color);
+        border-left: 3px solid var(--accent-color);
+        font-weight: bold;
+    }
+
+    /* --- メインコンテンツ --- */
+    .content {
+        margin-top: 50px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .controls-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .mode-selector {
+        display: flex;
+        gap: 6px;
+        background: #111;
+        padding: 4px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+    
+    .mode-selector label {
+        flex: 1;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 2px;
+        border-radius: 6px;
+        transition: 0.2s;
+    }
+    
+    .mode-selector input { display: none; }
+    
+    .mode-selector span {
+        font-size: 10px;
+        font-weight: bold;
+        color: var(--text-dim);
+        text-align: center;
+    }
+    
+    .mode-selector .unit-desc {
+        font-size: 8px;
+        opacity: 0.6;
+        font-weight: normal;
+    }
+    
+    .mode-selector input:checked + .label-box {
+        background: var(--input-bg);
+        color: var(--accent-color);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .mode-selector input:checked + .label-box span { color: var(--accent-color); }
+
+    .dropdown-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .control-group { display: flex; flex-direction: column; gap: 4px; }
+    
+    label.title {
+        font-size: 9px;
+        font-weight: bold;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        padding-left: 2px;
+    }
+    
+    select, input[type="number"] {
+        background: var(--input-bg);
+        color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 8px;
+        font-size: 13px;
+        height: 38px;
+        outline: none;
+        transition: 0.2s;
+    }
+    
+    select:focus, input:focus { border-color: var(--accent-color); }
+
+    /* --- 目標表示ボックス --- */
+    .target-vf-box {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        border: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .target-vf-box::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        background: var(--accent-color);
+        box-shadow: 0 0 10px var(--accent-color);
+    }
+    
+    .target-vf-label {
+        font-size: 10px;
+        font-weight: bold;
+        color: var(--accent-color);
+        margin-bottom: 4px;
+        letter-spacing: 0.05em;
+    }
+    
+    .target-vf-value {
+        font-size: 28px;
+        font-weight: 900;
+        font-family: 'Courier New', monospace;
+        color: #fff;
+    }
+    
+    .decimal { color: var(--accent-color); opacity: 0.8; font-size: 20px; }
+    
+    .vf-note, .vf-note-special {
+        font-size: 9px;
+        margin-top: 6px;
+        line-height: 1.4;
+    }
+    .vf-note { color: var(--text-dim); display: none; }
+    .vf-note-special { color: #ffaa00; display: none; font-weight: bold; }
+
+    /* --- テーブル --- */
+    .table-container {
+        flex-grow: 1;
+        overflow: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        text-align: center;
+        table-layout: fixed;
+    }
+    
+    thead th {
+        background: #222;
+        color: var(--accent-color);
+        padding: 10px 2px;
+        font-size: 10px;
+        font-weight: bold;
+        border-bottom: 2px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    .level-col {
+        font-weight: 900;
+        background: #151515 !important;
+        color: #fff;
+        position: sticky;
+        left: 0;
+        z-index: 50;
+        width: 40px !important;
+        border-right: 1px solid var(--border-color) !important;
+    }
+    
+    td {
+        padding: 10px 2px;
+        border: 1px solid rgba(255,255,255,0.05);
+        color: #555;
+    }
+
+    /* --- セルステータス --- */
+    .status-deep { color: #fff; font-weight: bold; background: rgba(0, 255, 204, 0.25); } 
+    .status-clear { color: var(--accent-color); font-weight: bold; background: rgba(0, 255, 204, 0.08); } 
+    .status-near { color: #ff8800; font-weight: bold; background: rgba(255, 136, 0, 0.08); } 
+    .status-none { color: #444; }
+
+    @media (max-width: 480px) {
+        .target-vf-value { font-size: 24px; }
+        td { padding: 8px 1px; font-size: 11px; }
+    }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+    <div class="app-title">VOLFORCE早見表 ver.∇</div>
+    <div class="menu-trigger" onclick="toggleMenu()">☰</div>
+</header>
+
+<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="side-menu" id="sideMenu">
+    <div class="menu-title">TOOL MENU</div>
+    <ul class="menu-list">
+        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator', '_blank')">TOP</a></li>
+        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/vol-to-score', '_blank')">目標スコア算出</a></li>
+        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/solo-vol', '_blank')">単曲VOLFORCE算出</a></li>
+        <li><a href="#" class="active" onclick="toggleMenu()">VOLFORCE早見表</a></li>
+        <li style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/rule', '_blank')" style="font-size: 11px; opacity: 0.8;">利用規約</a>
+        </li>
+        <li>
+            <a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/contact', '_blank')" style="font-size: 11px; opacity: 0.8;">お問い合わせ</a>
+        </li>
+    </ul>
+</div>
+
+<main class="content">
+    <div class="controls-card">
+        <div class="mode-selector">
+            <label>
+                <input type="radio" name="fmt" value="std" checked onchange="changeFormat()">
+                <div class="label-box"><span>総合VF</span><span class="unit-desc">(XX.xxx)</span></div>
+            </label>
+            <label>
+                <input type="radio" name="fmt" value="int" onchange="changeFormat()">
+                <div class="label-box"><span>公式単曲</span><span class="unit-desc">(XXX)</span></div>
+            </label>
+            <label>
+                <input type="radio" name="fmt" value="p1" onchange="changeFormat()">
+                <div class="label-box"><span>Tool</span><span class="unit-desc">(XX.x)</span></div>
+            </label>
+        </div>
+
+        <div class="dropdown-row">
+            <div class="control-group">
+                <label class="title">表示スコア範囲</label>
+                <select id="rangeSel" onchange="render()">
+                    <option value="puc_aaa_plus">PUC ～ AAA+</option>
+                    <option value="puc_s">PUC ～ S</option>
+                    <option value="puc_995">PUC ～ 995k</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="title">クリアメダル</label>
+                <select id="medalSel" onchange="render()">
+                    <option value="1.1">PUC</option>
+                    <option value="1.06" selected>UC</option>
+                    <option value="1.04">MAXXIVE</option>
+                    <option value="1.02">EXCESSIVE</option>
+                    <option value="1">EFFECTIVE</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="title">クラス</label>
+                <select id="classSel" onchange="updateRankOptions()">
+                    <option value="1 Sienna">1 Sienna</option>
+                    <option value="2 Cobalt">2 Cobalt</option>
+                    <option value="3 Dandelion">3 Dandelion</option>
+                    <option value="4 Cyan">4 Cyan</option>
+                    <option value="5 Scarlet">5 Scarlet</option>
+                    <option value="6 Coral">6 Coral</option>
+                    <option value="7 Argento">7 Argento</option>
+                    <option value="8 Eldora">8 Eldora</option>
+                    <option value="9 Crimson">9 Crimson</option>
+                    <option value="10 Imperial" selected>10 Imperial</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="title">ランク</label>
+                <select id="rankSel" onchange="updateByDropdown()"></select>
+            </div>
+            <div class="control-group" style="grid-column: span 2;">
+                <label class="title">目標VF入力</label>
+                <input type="number" id="customVF" value="20.000" step="0.05" min="0" oninput="updateByInput()">
+            </div>
+        </div>
+    </div>
+
+    <div class="target-vf-box">
+        <div class="target-vf-label" id="targetLabel">目標 (総合VF)</div>
+        <div class="target-vf-value" id="dispVF">0<span class="decimal">.000</span></div>
+        <div class="vf-note" id="vfNote">※VFは0.05刻みで算出</div>
+        <div class="vf-note-special" id="specialNote">※特定域到達のため、全上位譜面のプレー推奨</div>
+    </div>
+
+    <div class="table-container">
+        <table id="resultTable">
+            <thead><tr id="tableHeader"></tr></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    function toggleMenu() {
+        document.getElementById('sideMenu').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('show');
+    }
+
+    let currentStdVF = 20.000;
+    const EPS = 0.000001;
+
+    const VF_MAP = {
+        "1 Sienna": [0, 2.5, 5, 7.5], 
+        "2 Cobalt": [10, 10.5, 11, 11.5], 
+        "3 Dandelion": [12, 12.5, 13, 13.5],
+        "4 Cyan": [14, 14.25, 14.5, 14.75], 
+        "5 Scarlet": [15, 15.25, 15.5, 15.75], 
+        "6 Coral": [16, 16.25, 16.5, 16.75],
+        "7 Argento": [17, 17.25, 17.5, 17.75], 
+        "8 Eldora": [18, 18.25, 18.5, 18.75], 
+        "9 Crimson": [19, 19.25, 19.5, 19.75],
+        "10 Imperial": [20, 21, 22, 23]
+    };
+    const ROMAN = ["I", "II", "III", "IV"];
+
+    const SCORES = {
+        puc_aaa_plus: [
+            { n: 'PUC', s: 10000000 }, { n: '995k', s: 9950000 }, { n: '990k', s: 9900000 }, 
+            { n: '985k', s: 9850000 }, { n: '980k', s: 9800000 }
+        ],
+        puc_s: [
+            { n: 'PUC', s: 10000000 }, { n: '997.5', s: 9975000 }, { n: '995', s: 9950000 },
+            { n: '992.5', s: 9925000 }, { n: '990k', s: 9900000 }
+        ],
+        puc_995: [
+            { n: 'PUC', s: 10000000 }, { n: '999', s: 9990000 }, { n: '998', s: 9980000 },
+            { n: '997', s: 9970000 }, { n: '996', s: 9960000 }, { n: '995', s: 9950000 }
+        ]
+    };
+
+    const RANK_FACTORS = [
+        { t: 10000000, f: 1.05 }, { t: 9900000, f: 1.05 }, { t: 9800000, f: 1.02 },
+        { t: 9700000, f: 1.00 }, { t: 9500000, f: 0.97 }, { t: 9300000, f: 0.94 },
+        { t: 9000000, f: 0.91 }, { t: 8700000, f: 0.88 }, { t: 7500000, f: 0.85 },
+        { t: 0, f: 0.82 }
+    ];
+
+    function updateRankOptions() {
+        const classVal = document.getElementById('classSel').value;
+        const rankSel = document.getElementById('rankSel');
+        const values = VF_MAP[classVal];
+        let html = '';
+        values.forEach((v, i) => {
+            html += `<option value="${v}">${ROMAN[i]}</option>`;
+        });
+        rankSel.innerHTML = html;
+        updateByDropdown();
+    }
+
+    function getBaseIntVF(lv, score, selectedMedalFactor) {
+        let rankFactor = 0;
+        let medalFactor = selectedMedalFactor;
+        if (score >= 10000000) {
+            rankFactor = 1.05;
+            medalFactor = 1.1;
+        } else {
+            if (selectedMedalFactor === 1.1) return null;
+            for (let r of RANK_FACTORS) {
+                if (score >= r.t) {
+                    rankFactor = r.f;
+                    break;
+                }
+            }
+        }
+        return Math.floor(lv * (score / 10000000) * rankFactor * medalFactor * 20 + EPS);
+    }
+
+    function formatValueForTable(intVF, fmt) {
+        if (intVF === null) return "---";
+        if (fmt === "int") return intVF.toString();
+        if (fmt === "p1") return (intVF / 10).toFixed(1);
+        return (intVF / 20).toFixed(2);
+    }
+
+    function formatValueForMain(intVF, fmt) {
+        if (intVF === null) return "0.000";
+        if (fmt === "int") return intVF.toString();
+        if (fmt === "p1") return (intVF / 10).toFixed(1);
+        return (intVF / 20).toFixed(3);
+    }
+
+    function changeFormat() {
+        const fmt = document.querySelector('input[name="fmt"]:checked').value;
+        const input = document.getElementById('customVF');
+        const label = document.getElementById('targetLabel');
+        const note = document.getElementById('vfNote');
+        const targetInt = Math.floor(currentStdVF * 20 + EPS);
+        
+        if (fmt === "int") { 
+            input.max = "479";
+            input.value = Math.min(targetInt, 479);
+            input.step = "1";
+            label.innerText = "目標 (公式単曲)";
+            note.style.display = "none";
+        } else if (fmt === "p1") { 
+            input.max = "47.9";
+            input.value = Math.min((targetInt / 10), 47.9).toFixed(1);
+            input.step = "0.1";
+            label.innerText = "目標 (Tool)";
+            note.style.display = "none";
+        } else { 
+            input.max = "23.950";
+            input.value = Math.min((targetInt / 20), 23.950).toFixed(3);
+            input.step = "0.05";
+            label.innerText = "目標 (総合VF)";
+            note.style.display = "block";
+        }
+        updateByInput();
+    }
+
+    function updateByDropdown() {
+        const rankVal = document.getElementById('rankSel').value;
+        if (!rankVal) return;
+        currentStdVF = parseFloat(rankVal);
+        changeFormat();
+    }
+
+    function updateByInput() {
+        const fmt = document.querySelector('input[name="fmt"]:checked').value;
+        const input = document.getElementById('customVF');
+        let val = parseFloat(input.value) || 0;
+        const maxVal = parseFloat(input.max);
+        
+        if (val > maxVal) val = maxVal;
+        if (val < 0) val = 0;
+
+        if (fmt === "int") currentStdVF = val / 20;
+        else if (fmt === "p1") currentStdVF = (val * 10) / 20;
+        else currentStdVF = val;
+
+        const specialNote = document.getElementById('specialNote');
+        specialNote.style.display = (currentStdVF >= 22.5) ? "block" : "none";
+        render();
+    }
+
+    function render() {
+        const medalFactor = parseFloat(document.getElementById('medalSel').value);
+        const fmt = document.querySelector('input[name="fmt"]:checked').value;
+        const rangeKey = document.getElementById('rangeSel').value;
+        const activeScores = SCORES[rangeKey];
+        const targetIntVF = Math.floor(currentStdVF * 20 + EPS);
+        const targetStdVF = currentStdVF;
+
+        document.getElementById('dispVF').innerHTML = formatValueForMain(targetIntVF, fmt).replace(/\.(\d+)/, '<span class="decimal">.$1</span>');
+
+        let headerHtml = '<th class="level-col">Lv</th>';
+        activeScores.forEach(s => { headerHtml += `<th>${s.n}</th>`; });
+        document.getElementById('tableHeader').innerHTML = headerHtml;
+
+        let levels = [];
+        for (let i = 209; i >= 180; i--) levels.push({ v: i / 10, t: 'f1' });
+        levels.push({ v: 17.5, t: 'f1' }, { v: 17.0, t: 'f1' });
+        for (let i = 16; i >= 1; i--) levels.push({ v: i, t: 'int' });
+
+        let html = '';
+        levels.forEach(lvObj => {
+            html += `<tr><td class="level-col">${lvObj.t === 'int' ? lvObj.v : lvObj.v.toFixed(1)}</td>`;
+            activeScores.forEach(sc => {
+                const intVF = getBaseIntVF(lvObj.v, sc.s, medalFactor);
+                if (intVF === null) {
+                    html += `<td class="status-none">---</td>`;
+                } else {
+                    const stdVF = intVF / 20;
+                    const diff = stdVF - targetStdVF;
+                    let cellClass = "status-none";
+
+                    if (targetStdVF >= 22.5) {
+                        if (stdVF >= 23.000) cellClass = "status-deep";
+                        else if (stdVF >= 22.650) cellClass = "status-clear";
+                        else if (stdVF >= 22.150) cellClass = "status-near";
+                    } else {
+                        if (diff >= 0.5 && diff <= 1.0) cellClass = "status-deep";
+                        else if (diff >= 0 && diff < 0.5) cellClass = "status-clear";
+                        else if (diff < 0 && diff >= -0.5) cellClass = "status-near";
+                    }
+                    html += `<td class="${cellClass}">${formatValueForTable(intVF, fmt)}</td>`;
+                }
+            });
+            html += `</tr>`;
+        });
+        document.getElementById('tableBody').innerHTML = html;
+    }
+
+    updateRankOptions();
+</script>
+</body>
+</html>
+ 
