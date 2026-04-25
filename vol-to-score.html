@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>目標スコア算出 - VOLFORCE CALC ∇</title>
+    <style>
+        :root {
+            --bg-deep: #0a0e0a;
+            --army-green: #2d3b2d;
+            --neon-lime: #b0ff2e;
+            --text-main: #e0eee0;
+            --line-sub: rgba(176, 255, 46, 0.15);
+            --card-bg: rgba(20, 30, 20, 0.8);
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            margin: 0;
+            background-image: 
+                linear-gradient(var(--line-sub) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
+            background-size: 40px 40px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- UI Components --- */
+        header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 2px solid var(--neon-lime);
+            background: rgba(0, 0, 0, 0.9);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--neon-lime);
+            text-shadow: 0 0 10px var(--neon-lime);
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--army-green);
+            padding: 15px;
+            clip-path: polygon(0 0, 97% 0, 100% 10%, 100% 100%, 3% 100%, 0 90%);
+        }
+
+        .target-vf-display {
+            border-left: 4px solid var(--neon-lime);
+            padding-left: 15px;
+        }
+
+        .vf-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--neon-lime);
+        }
+
+        .vf-unit { font-size: 1rem; opacity: 0.7; margin-left: 5px; }
+
+        /* --- Form Elements --- */
+        label { display: block; font-size: 0.75rem; color: var(--neon-lime); margin-bottom: 5px; text-transform: uppercase; }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            background: #121212;
+            border: 1px solid var(--army-green);
+            color: white;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .mode-selector label {
+            flex: 1;
+            text-align: center;
+            background: #1a1a1a;
+            padding: 8px 2px;
+            border: 1px solid var(--army-green);
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.2s;
+        }
+
+        .mode-selector input { display: none; }
+        .mode-selector input:checked + span {
+            color: var(--neon-lime);
+            font-weight: bold;
+        }
+        .mode-selector label:has(input:checked) {
+            border-color: var(--neon-lime);
+            background: rgba(176, 255, 46, 0.1);
+        }
+
+        /* --- Table Styling --- */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--army-green);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 600px;
+        }
+
+        th {
+            background: var(--army-green);
+            color: var(--neon-lime);
+            padding: 12px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid rgba(176, 255, 46, 0.1);
+            text-align: center;
+        }
+
+        .level-cell { font-weight: bold; background: rgba(176, 255, 46, 0.05); }
+
+        /* --- Score Coloring (Original Logic) --- */
+        .val-none { color: #444; }
+        .val-low-score { color: #666; }
+        .eff-low { color: #99cc99; }
+        .eff-mid { color: #66ff66; font-weight: bold; }
+        .eff-high { color: #00ff00; font-weight: bold; text-shadow: 0 0 5px rgba(0,255,0,0.5); }
+        .exc-low { color: #bb99ff; }
+        .exc-mid { color: #9966ff; font-weight: bold; }
+        .exc-high { color: #cc33ff; font-weight: bold; text-shadow: 0 0 5px rgba(204,51,255,0.5); }
+        .max-low { color: #bbbbbb; }
+        .max-mid { color: #eeeeee; font-weight: bold; }
+        .max-high { color: #ffffff; font-weight: bold; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .uc-low { color: #ff99cc; }
+        .uc-mid { color: #ff66aa; font-weight: bold; }
+        .uc-high { color: #ff3399; font-weight: bold; text-shadow: 0 0 5px rgba(255,51,153,0.5); }
+        .puc-active { color: #ffff00; font-weight: bold; font-style: italic; text-shadow: 0 0 8px rgba(255,255,0,0.5); }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.9);
+            font-size: 0.8rem;
+        }
+        
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--neon-lime);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>目標スコア算出 <span style="font-size: 0.7em; opacity: 0.8; margin-left: 5px;">ver.∇</span></h1>
+</header>
+
+<div class="main-container">
+    <a href="index.html" class="nav-back">◀ TOPへ戻る</a>
+
+    <div class="controls-grid">
+        <div class="panel">
+            <label>表示・計算方式</label>
+            <div class="mode-selector">
+                <label><input type="radio" name="fmt" value="std" checked onchange="changeFormat()"><span id="label-std">総合VF</span></label>
+                <label><input type="radio" name="fmt" value="int" onchange="changeFormat()"><span id="label-int">公式単曲</span></label>
+                <label><input type="radio" name="fmt" value="p1" onchange="changeFormat()"><span id="label-p1">Tool値</span></label>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 2;">
+                    <label>クラス</label>
+                    <select id="classSel" onchange="updateByDropdown()">
+                        <option value="1 Sienna">1 Sienna</option><option value="2 Cobalt">2 Cobalt</option><option value="3 Dandelion">3 Dandelion</option>
+                        <option value="4 Cyan">4 Cyan</option><option value="5 Scarlet">5 Scarlet</option><option value="6 Coral">6 Coral</option>
+                        <option value="7 Argento">7 Argento</option><option value="8 Eldora">8 Eldora</option><option value="9 Crimson">9 Crimson</option>
+                        <option value="10 Imperial" selected>10 Imperial</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>ランク</label>
+                    <select id="stepSel" onchange="updateByDropdown()">
+                        <option value="0">I</option><option value="1">II</option><option value="2">III</option><option value="3">IV</option>
+                    </select>
+                </div>
+            </div>
+            
+            <label>目標VF直接入力</label>
+            <input type="number" id="customVF" step="0.05" oninput="updateByInput()">
+        </div>
+
+        <div class="panel target-vf-display">
+            <label id="vfLabel">目標単曲VOLFORCE</label>
+            <div class="vf-value" id="dispVF">0.000</div>
+            <div style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;" id="rawVF">
+                総合換算: ---
+            </div>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">Lv</th>
+                    <th>EFF</th>
+                    <th>EXC</th>
+                    <th>MAX</th>
+                    <th>UC</th>
+                    <th>PUC</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<footer>
+    ©Konami Amusement / ©2026 sdvx-sco-vol-tool
+</footer>
+
+<script>
+// --- [Original Logic: 変更なし] ---
+const VF_MAP = {
+    "1 Sienna": [0, 2.5, 5, 7.5], "2 Cobalt": [10, 10.5, 11, 11.5], "3 Dandelion": [12, 12.5, 13, 13.5],
+    "4 Cyan": [14, 14.25, 14.5, 14.75], "5 Scarlet": [15, 15.25, 15.5, 15.75], "6 Coral": [16, 16.25, 16.5, 16.75],
+    "7 Argento": [17, 17.25, 17.5, 17.75], "8 Eldora": [18, 18.25, 18.5, 18.75], "9 Crimson": [19, 19.25, 19.5, 19.75],
+    "10 Imperial": [20, 21, 22, 23]
+};
+
+let currentStandardVF = 20.000;
+
+function solveFromSheetFormula(targetVF, lv, mCoef) {
+    if (targetVF <= 0) return 0;
+    const calc = (rCoef) => (targetVF * 10000000) / (lv * rCoef * mCoef);
+    let res = calc(1.05);
+    if (res > 9900000) return Math.round(res);
+    if (res < 9900000 && calc(1.02) > 9900000) return 9900000;
+    res = calc(1.02);
+    if (res > 9800000) return Math.round(res);
+    if (res < 9800000 && calc(1.00) > 9800000) return 9800000;
+    res = calc(1.00);
+    if (res > 9700000) return Math.round(res);
+    if (res < 9700000 && calc(0.97) > 9700000) return 9700000;
+    res = calc(0.97);
+    if (res > 9500000) return Math.round(res);
+    if (res < 9500000 && calc(0.94) > 9500000) return 9500000;
+    res = calc(0.94);
+    if (res > 9300000) return Math.round(res);
+    if (res < 9300000 && calc(0.91) > 9300000) return 9300000;
+    res = calc(0.91);
+    if (res > 9000000) return Math.round(res);
+    if (res < 9000000 && calc(0.88) > 9000000) return 9000000;
+    res = calc(0.88);
+    if (res > 8700000) return Math.round(res);
+    if (res < 8700000 && calc(0.85) > 8700000) return 8700000;
+    res = calc(0.85);
+    if (res > 7500000) return Math.round(res);
+    if (res < 7500000 && calc(0.82) > 7500000) return 7500000;
+    res = calc(0.82);
+    if (res > 6500000) return Math.round(res);
+    res = calc(0.80);
+    return res > 0 ? Math.round(res) : null;
+}
+
+// --- [UI Logic] ---
+function getFormat() { return document.querySelector('input[name="fmt"]:checked').value; }
+
+function changeFormat() {
+    const fmt = getFormat();
+    const input = document.getElementById('customVF');
+    if (fmt === "int") {
+        input.value = Math.floor(currentStandardVF * 20);
+        input.step = "1";
+    } else if (fmt === "p1") {
+        input.value = (currentStandardVF * 2).toFixed(1);
+        input.step = "0.1";
+    } else {
+        input.value = currentStandardVF.toFixed(3);
+        input.step = "0.05";
+    }
+    render();
+}
+
+function getScoreClass(val, prefix) {
+    if (!val || val >= 10000000) return "val-none"; 
+    if (val < 9800000) return "val-low-score"; 
+    if (val >= 9950000) return prefix + "-high";
+    if (val >= 9900000) return prefix + "-mid";
+    if (val >= 9800000) return prefix + "-low";
+    return "";
+}
+
+function render() {
+    const fmt = getFormat();
+    const vf = Math.floor((currentStandardVF + 0.00001) / 0.05) * 0.05;
+    
+    let dispVal = "";
+    if (fmt === "int") dispVal = Math.floor(vf * 20);
+    else if (fmt === "p1") dispVal = (vf * 2).toFixed(1);
+    else dispVal = vf.toFixed(3);
+
+    document.getElementById('dispVF').innerText = dispVal;
+    document.getElementById('rawVF').innerText = `総合VOLFORCE換算: ${currentStandardVF.toFixed(3)}`;
+
+    let levels = [];
+    for (let l = 20.9; l >= 18.0; l = Math.round((l - 0.1) * 10) / 10) { levels.push(l); }
+    levels.push(17.5, 17.0);
+    for (let l = 16.0; l >= 1.0; l--) { levels.push(l); }
+
+    let html = '';
+    levels.forEach(lv => {
+        const eff = solveFromSheetFormula(vf, lv, 1.00);
+        const exc = solveFromSheetFormula(vf, lv, 1.02);
+        const max = solveFromSheetFormula(vf, lv, 1.04);
+        const uc  = solveFromSheetFormula(vf, lv, 1.06);
+        const canReachPUC = (lv * 1.05 * 1.10) >= (vf - 0.0001);
+        
+        let pucText = "---", pucCls = "val-none";
+        if (canReachPUC) {
+            pucText = "10,000,000";
+            pucCls = (uc && uc >= 9950000) ? "puc-active" : "val-low-score";
+        }
+        
+        const formatScore = (val) => (val && val < 10000000) ? val.toLocaleString() : "---";
+
+        html += `<tr><td class="level-cell">${lv % 1 === 0 ? lv.toFixed(0) : lv.toFixed(1)}</td>`;
+        html += `<td class="${getScoreClass(eff, 'eff')}">${formatScore(eff)}</td>`;
+        html += `<td class="${getScoreClass(exc, 'exc')}">${formatScore(exc)}</td>`;
+        html += `<td class="${getScoreClass(max, 'max')}">${formatScore(max)}</td>`;
+        html += `<td class="${getScoreClass(uc, 'uc')}">${formatScore(uc)}</td>`;
+        html += `<td class="${pucCls}">${pucText}</td></tr>`;
+    });
+    document.getElementById('tableBody').innerHTML = html;
+}
+
+function updateByDropdown() {
+    const cls = document.getElementById('classSel').value;
+    const stp = document.getElementById('stepSel').value;
+    currentStandardVF = VF_MAP[cls][stp];
+    changeFormat();
+}
+
+function updateByInput() {
+    const input = document.getElementById('customVF');
+    const fmt = getFormat();
+    let val = parseFloat(input.value);
+    if (isNaN(val)) return;
+
+    if (fmt === "int") currentStandardVF = val / 20;
+    else if (fmt === "p1") currentStandardVF = val / 2;
+    else currentStandardVF = val;
+
+    if (currentStandardVF < 0) currentStandardVF = 0;
+    if (currentStandardVF > 25) currentStandardVF = 25;
+    render();
+}
+updateByDropdown();
+</script>
+</body>
+</html>
+ 
