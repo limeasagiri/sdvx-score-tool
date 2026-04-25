@@ -146,13 +146,13 @@
 
         td { padding: 8px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); border-right: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
         .level-cell { 
-    font-weight: bold; 
-    background-color: #111811; /* 透けないように濃い背景色を指定 */
-    position: sticky; 
-    left: 0; 
-    z-index: 5;
-    border-right: 1px solid rgba(176, 255, 46, 0.4); /* 境目をはっきりさせる線 */
-}
+            font-weight: bold; 
+            background-color: #111811; /* 透けないように濃い背景色を指定 */
+            position: sticky; 
+            left: 0; 
+            z-index: 5;
+            border-right: 1px solid rgba(176, 255, 46, 0.4); /* 境目をはっきりさせる線 */
+        }
 
         /* スコア配色 */
         .val-none { color: #444; }
@@ -334,7 +334,8 @@ function render() {
         const uc  = solveFromSheetFormula(vf, lv, 1.06);
         const canReachPUC = (lv * 1.05 * 1.10) >= (vf - 0.0001);
         
-        if (!eff && !exc && !max && !uc && !canReachPUC) return;
+        // すべての項目が取得できない（null）かつ PUCも不可能なら、この行（Lv）は表示しない
+        if (eff === null && exc === null && max === null && uc === null && !canReachPUC) return;
 
         let pucText = "---", pucCls = "val-none";
         if (canReachPUC) {
