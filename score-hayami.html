@@ -30,7 +30,6 @@
         background-size: 30px 30px;
     }
 
-    /* ヘッダー */
     .header-bar {
         display: flex;
         justify-content: space-between;
@@ -49,18 +48,15 @@
         letter-spacing: 2px;
     }
 
-    /* ハンバーガーボタン（タクティカル） */
     .menu-btn {
         width: 34px; height: 34px;
         display: flex; flex-direction: column; justify-content: center; align-items: center;
         gap: 4px; cursor: pointer; z-index: 1001;
         background: var(--army-green); 
         clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
-        transition: 0.2s;
     }
     .menu-btn span { width: 18px; height: 2px; background: var(--neon-lime); border-radius: 1px; }
 
-    /* サイドメニュー（ドロワー） */
     .drawer-overlay {
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         background: rgba(0, 0, 0, 0.8); display: none; z-index: 999;
@@ -87,7 +83,6 @@
         border-left: 4px solid var(--neon-lime);
     }
 
-    /* タブ・コントロール */
     .view-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0; }
     .tab {
         flex: 1; padding: 10px 2px; background: rgba(45, 59, 45, 0.3); border: 1px solid var(--army-green);
@@ -116,7 +111,6 @@
     }
     select:focus, input:focus { border-color: var(--neon-lime); }
 
-    /* テーブル */
     .table-container {
         flex-grow: 1; overflow: auto; border: 1px solid var(--army-green);
         background: rgba(0, 0, 0, 0.6); margin-top: 10px;
@@ -138,7 +132,6 @@
     .sub-line { font-size: 8px; opacity: 0.6; margin-top: 2px; }
     .ref-line { font-size: 14px; color: var(--army-green); }
 
-    /* メダル・カラー（タクティカル版） */
     .eff-active { color: #88cc88; }
     .exc-active { color: #aa88ff; }
     .max-active { color: #aab8aa; }
@@ -233,7 +226,6 @@
 </div>
 
 <script>
-// ロジックと非表示コードはそのまま維持
 let currentViewMode = 'total';
 
 function toggleMenu() {
@@ -313,20 +305,31 @@ function getLevelList() {
 function getRequired(lv, targetVF, medal, isBaseMedal) {
     const m = MEDAL_COEF[medal];
     const vfAtPUC = Math.floor(lv * 1.05 * 1.1 * 20) / 20;
+    
     if (isBaseMedal && medal === "PUC") {
         if (vfAtPUC >= targetVF) return { rank: "PUC", medal: "PUC", vf: vfAtPUC, priority: 100, isAAA: false };
         return null;
     }
+
     const sScore = Math.ceil((targetVF * 10000000) / (lv * 1.05 * m));
     const aaaPlusScore = Math.ceil((targetVF * 10000000) / (lv * 1.02 * m));
+
     if (isBaseMedal) {
         if (aaaPlusScore >= 9800000 && aaaPlusScore < 9900000) return { rank: (aaaPlusScore === 9800000) ? "AAA+" : aaaPlusScore.toLocaleString(), medal: medal, vf: targetVF, priority: 10, isAAA: true };
         if (sScore >= 9900000 && sScore < 10000000) return { rank: (sScore === 9900000) ? "S" : sScore.toLocaleString(), medal: medal, vf: targetVF, priority: 20, isAAA: false };
-        if (aaaPlusScore < 9800000 && (Math.floor(lv * 1.02 * m * 20) / 20) >= targetVF) return { rank: "AAA+", medal: medal, vf: Math.floor(lv * 1.05 * m * 0.98 * 20) / 20, priority: 15, isAAA: true };
-        if (sScore < 9900000 && (Math.floor(lv * 1.05 * m * 20) / 20) >= targetVF) return { rank: "S", medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 25, isAAA: false };
+        
+        // 修正: AAA+基準のVF算出に1.02を使用
+        if (aaaPlusScore < 9800000 && (Math.floor(lv * 1.02 * m * 20) / 20) >= targetVF) {
+            return { rank: "AAA+", medal: medal, vf: Math.floor(lv * 1.02 * m * 0.98 * 20) / 20, priority: 15, isAAA: true };
+        }
+        if (sScore < 9900000 && (Math.floor(lv * 1.05 * m * 20) / 20) >= targetVF) {
+            return { rank: "S", medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 25, isAAA: false };
+        }
     } else {
         if (medal === "PUC" && vfAtPUC >= targetVF) return { rank: "PUC", medal: "PUC", vf: vfAtPUC, priority: 100, isAAA: false };
-        if (medal !== "PUC" && (Math.floor(lv * 1.05 * m * 0.99 * 20) / 20) >= targetVF) return { rank: "S+ " + medal, medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 50, isAAA: false };
+        if (medal !== "PUC" && (Math.floor(lv * 1.05 * m * 0.99 * 20) / 20) >= targetVF) {
+            return { rank: "S+ " + medal, medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 50, isAAA: false };
+        }
     }
     return null;
 }
