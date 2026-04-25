@@ -11,7 +11,7 @@
             --neon-lime: #b0ff2e;
             --text-main: #e0eee0;
             --line-sub: rgba(176, 255, 46, 0.15);
-            --card-bg: rgba(20, 30, 20, 0.8);
+            --card-bg: rgba(20, 30, 20, 0.85);
         }
 
         body {
@@ -28,7 +28,7 @@
             min-height: 100vh;
         }
 
-        /* --- UI Components --- */
+        /* --- ヘッダー & メニューボタン --- */
         header {
             padding: 20px 0;
             text-align: center;
@@ -37,124 +37,100 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         header h1 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             letter-spacing: 2px;
             color: var(--neon-lime);
             text-shadow: 0 0 10px var(--neon-lime);
         }
 
-        .main-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .panel {
-            background: var(--card-bg);
-            border: 1px solid var(--army-green);
-            padding: 15px;
-            clip-path: polygon(0 0, 97% 0, 100% 10%, 100% 100%, 3% 100%, 0 90%);
-        }
-
-        .target-vf-display {
-            border-left: 4px solid var(--neon-lime);
-            padding-left: 15px;
-        }
-
-        .vf-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--neon-lime);
-        }
-
-        .vf-unit { font-size: 1rem; opacity: 0.7; margin-left: 5px; }
-
-        /* --- Form Elements --- */
-        label { display: block; font-size: 0.75rem; color: var(--neon-lime); margin-bottom: 5px; text-transform: uppercase; }
-        
-        select, input {
-            width: 100%;
-            padding: 10px;
-            background: #121212;
-            border: 1px solid var(--army-green);
-            color: white;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .mode-selector label {
-            flex: 1;
-            text-align: center;
-            background: #1a1a1a;
-            padding: 8px 2px;
-            border: 1px solid var(--army-green);
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: 0.2s;
-        }
-
-        .mode-selector input { display: none; }
-        .mode-selector input:checked + span {
-            color: var(--neon-lime);
-            font-weight: bold;
-        }
-        .mode-selector label:has(input:checked) {
-            border-color: var(--neon-lime);
-            background: rgba(176, 255, 46, 0.1);
-        }
-
-        /* --- Table Styling --- */
-        .table-wrapper {
-            overflow-x: auto;
-            border: 1px solid var(--army-green);
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            min-width: 600px;
-        }
-
-        th {
+        .menu-trigger {
+            position: absolute;
+            right: 20px;
             background: var(--army-green);
             color: var(--neon-lime);
-            padding: 12px;
-            text-align: center;
-            position: sticky;
+            border: 1px solid var(--neon-lime);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 1100;
+        }
+
+        /* --- サイドメニュー --- */
+        .side-menu {
+            position: fixed;
             top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: rgba(10, 14, 10, 0.98);
+            z-index: 1200;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid var(--neon-lime);
+            padding: 80px 0 20px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.8);
         }
 
-        td {
-            padding: 10px;
-            border: 1px solid rgba(176, 255, 46, 0.1);
-            text-align: center;
-        }
+        .side-menu.open { right: 0; }
 
+        .menu-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            z-index: 1150;
+        }
+        .menu-overlay.show { display: block; }
+
+        .menu-label { padding: 20px 25px 10px; font-size: 0.7rem; color: var(--neon-lime); opacity: 0.6; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .menu-item {
+            padding: 15px 25px;
+            display: block;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(176, 255, 46, 0.1);
+            transition: 0.2s;
+        }
+        .menu-item:hover { background: rgba(176, 255, 46, 0.1); color: var(--neon-lime); }
+        .menu-item.current { border-left: 4px solid var(--neon-lime); background: rgba(176, 255, 46, 0.1); color: var(--neon-lime); font-weight: bold; }
+
+        /* --- コンテンツレイアウト (変更なし) --- */
+        .main-container { max-width: 1000px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; }
+        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .panel { background: var(--card-bg); border: 1px solid var(--army-green); padding: 15px; clip-path: polygon(0 0, 97% 0, 100% 10%, 100% 100%, 3% 100%, 0 90%); }
+        .target-vf-display { border-left: 4px solid var(--neon-lime); padding-left: 15px; }
+        .vf-value { font-size: 2.5rem; font-weight: bold; color: var(--neon-lime); }
+        
+        /* フォーム要素 */
+        label { display: block; font-size: 0.75rem; color: var(--neon-lime); margin-bottom: 5px; text-transform: uppercase; }
+        select, input { width: 100%; padding: 10px; background: #000; border: 1px solid var(--army-green); color: white; margin-bottom: 10px; font-size: 1rem; }
+        
+        .mode-selector { display: flex; gap: 5px; margin-bottom: 15px; }
+        .mode-selector label { flex: 1; text-align: center; background: #1a1a1a; padding: 8px 2px; border: 1px solid var(--army-green); cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
+        .mode-selector input { display: none; }
+        .mode-selector input:checked + span { color: var(--neon-lime); font-weight: bold; }
+        .mode-selector label:has(input:checked) { border-color: var(--neon-lime); background: rgba(176, 255, 46, 0.1); }
+
+        /* テーブル */
+        .table-wrapper { overflow-x: auto; border: 1px solid var(--army-green); background: rgba(0, 0, 0, 0.8); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+        th { background: var(--army-green); color: var(--neon-lime); padding: 12px; text-align: center; position: sticky; top: 0; }
+        td { padding: 10px; border: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
         .level-cell { font-weight: bold; background: rgba(176, 255, 46, 0.05); }
 
-        /* --- Score Coloring (Original Logic) --- */
+        /* スコア色付け (ロジック通り) */
         .val-none { color: #444; }
         .val-low-score { color: #666; }
         .eff-low { color: #99cc99; }
@@ -171,32 +147,32 @@
         .uc-high { color: #ff3399; font-weight: bold; text-shadow: 0 0 5px rgba(255,51,153,0.5); }
         .puc-active { color: #ffff00; font-weight: bold; font-style: italic; text-shadow: 0 0 8px rgba(255,255,0,0.5); }
 
-        footer {
-            margin-top: auto;
-            padding: 30px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            font-size: 0.8rem;
-        }
-        
-        .nav-back {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--neon-lime);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
+        footer { margin-top: auto; padding: 30px; text-align: center; background: rgba(0, 0, 0, 0.9); font-size: 0.8rem; opacity: 0.6; }
     </style>
 </head>
 <body>
 
+<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
 <header>
     <h1>目標スコア算出 <span style="font-size: 0.7em; opacity: 0.8; margin-left: 5px;">ver.∇</span></h1>
+    <div class="menu-trigger" onclick="toggleMenu()">☰</div>
 </header>
 
-<div class="main-container">
-    <a href="index.html" class="nav-back">◀ TOPへ戻る</a>
+<div class="side-menu" id="sideMenu">
+    <div class="menu-label">Navi</div>
+    <a href="index.html" class="menu-item">TOPページ</a>
+    <a href="vol-to-score.html" class="menu-item current">目標スコア算出</a>
+    <a href="score-hayami.html" class="menu-item">目標スコア早見表</a>
+    <a href="solo-vol.html" class="menu-item">単曲VOLFORCE算出</a>
+    <a href="vol-hayami.html" class="menu-item">VOLFORCE早見表</a>
+    
+    <div class="menu-label">Information</div>
+    <a href="rule.html" class="menu-item">利用規約</a>
+    <a href="contact.html" class="menu-item">お問い合わせ</a>
+</div>
 
+<div class="main-container">
     <div class="controls-grid">
         <div class="panel">
             <label>表示・計算方式</label>
@@ -259,7 +235,13 @@
 </footer>
 
 <script>
-// --- [Original Logic: 変更なし] ---
+// メニュー開閉
+function toggleMenu() {
+    document.getElementById('sideMenu').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('show');
+}
+
+// --- [ロジック部分は変更なし] ---
 const VF_MAP = {
     "1 Sienna": [0, 2.5, 5, 7.5], "2 Cobalt": [10, 10.5, 11, 11.5], "3 Dandelion": [12, 12.5, 13, 13.5],
     "4 Cyan": [14, 14.25, 14.5, 14.75], "5 Scarlet": [15, 15.25, 15.5, 15.75], "6 Coral": [16, 16.25, 16.5, 16.75],
@@ -302,7 +284,6 @@ function solveFromSheetFormula(targetVF, lv, mCoef) {
     return res > 0 ? Math.round(res) : null;
 }
 
-// --- [UI Logic] ---
 function getFormat() { return document.querySelector('input[name="fmt"]:checked').value; }
 
 function changeFormat() {
@@ -333,12 +314,7 @@ function getScoreClass(val, prefix) {
 function render() {
     const fmt = getFormat();
     const vf = Math.floor((currentStandardVF + 0.00001) / 0.05) * 0.05;
-    
-    let dispVal = "";
-    if (fmt === "int") dispVal = Math.floor(vf * 20);
-    else if (fmt === "p1") dispVal = (vf * 2).toFixed(1);
-    else dispVal = vf.toFixed(3);
-
+    let dispVal = (fmt === "int") ? Math.floor(vf * 20) : (fmt === "p1") ? (vf * 2).toFixed(1) : vf.toFixed(3);
     document.getElementById('dispVF').innerText = dispVal;
     document.getElementById('rawVF').innerText = `総合VOLFORCE換算: ${currentStandardVF.toFixed(3)}`;
 
@@ -354,15 +330,12 @@ function render() {
         const max = solveFromSheetFormula(vf, lv, 1.04);
         const uc  = solveFromSheetFormula(vf, lv, 1.06);
         const canReachPUC = (lv * 1.05 * 1.10) >= (vf - 0.0001);
-        
         let pucText = "---", pucCls = "val-none";
         if (canReachPUC) {
             pucText = "10,000,000";
             pucCls = (uc && uc >= 9950000) ? "puc-active" : "val-low-score";
         }
-        
         const formatScore = (val) => (val && val < 10000000) ? val.toLocaleString() : "---";
-
         html += `<tr><td class="level-cell">${lv % 1 === 0 ? lv.toFixed(0) : lv.toFixed(1)}</td>`;
         html += `<td class="${getScoreClass(eff, 'eff')}">${formatScore(eff)}</td>`;
         html += `<td class="${getScoreClass(exc, 'exc')}">${formatScore(exc)}</td>`;
@@ -374,9 +347,7 @@ function render() {
 }
 
 function updateByDropdown() {
-    const cls = document.getElementById('classSel').value;
-    const stp = document.getElementById('stepSel').value;
-    currentStandardVF = VF_MAP[cls][stp];
+    currentStandardVF = VF_MAP[document.getElementById('classSel').value][document.getElementById('stepSel').value];
     changeFormat();
 }
 
@@ -385,11 +356,7 @@ function updateByInput() {
     const fmt = getFormat();
     let val = parseFloat(input.value);
     if (isNaN(val)) return;
-
-    if (fmt === "int") currentStandardVF = val / 20;
-    else if (fmt === "p1") currentStandardVF = val / 2;
-    else currentStandardVF = val;
-
+    currentStandardVF = (fmt === "int") ? val / 20 : (fmt === "p1") ? val / 2 : val;
     if (currentStandardVF < 0) currentStandardVF = 0;
     if (currentStandardVF > 25) currentStandardVF = 25;
     render();
