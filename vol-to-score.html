@@ -145,7 +145,14 @@
         }
 
         td { padding: 8px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); border-right: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
-        .level-cell { font-weight: bold; background: rgba(176, 255, 46, 0.05); position: sticky; left: 0; z-index: 5; }
+        .level-cell { 
+    font-weight: bold; 
+    background-color: #111811; /* 透けないように濃い背景色を指定 */
+    position: sticky; 
+    left: 0; 
+    z-index: 5;
+    border-right: 1px solid rgba(176, 255, 46, 0.4); /* 境目をはっきりさせる線 */
+}
 
         /* スコア配色 */
         .val-none { color: #444; }
