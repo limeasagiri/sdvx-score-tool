@@ -10,15 +10,14 @@
             --army-green: #2d3b2d;
             --neon-lime: #b0ff2e;
             --text-main: #e0eee0;
-            --line-sub: rgba(176, 255, 46, 0.2);
+            --line-sub: rgba(176, 255, 46, 0.15);
         }
 
         body {
             background-color: var(--bg-deep);
             color: var(--text-main);
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
             margin: 0;
-            /* 背景にグリッド（方眼）を敷く */
             background-image: 
                 linear-gradient(var(--line-sub) 1px, transparent 1px),
                 linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
@@ -26,14 +25,13 @@
             overflow-x: hidden;
         }
 
-        /* 背景にうっすら地図のような円形グラデーション */
         body::before {
             content: "";
             position: fixed;
             top: 50%; left: 50%;
             width: 200%; height: 200%;
             transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(45, 59, 45, 0.3) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(45, 59, 45, 0.2) 0%, transparent 70%);
             z-index: -1;
         }
 
@@ -41,22 +39,20 @@
             padding: 50px 0;
             text-align: center;
             border-bottom: 2px solid var(--neon-lime);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             position: relative;
         }
 
         header h1 {
             margin: 0;
-            font-size: 2.2rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
+            font-size: 2rem;
+            letter-spacing: 4px;
             color: var(--neon-lime);
             text-shadow: 0 0 15px var(--neon-lime);
         }
 
-        /* 楽曲決定画面風の三角デコレーション */
         header::after {
-            content: "▼ NEXT PHASE";
+            content: "▼ SYSTEM ONLINE: VOL-CALC ∇";
             position: absolute;
             bottom: -25px;
             left: 50%;
@@ -65,89 +61,130 @@
             color: black;
             padding: 2px 15px;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .container {
             max-width: 900px;
             margin: 60px auto;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             padding: 0 20px;
         }
 
         .tool-card {
-            background: rgba(45, 59, 45, 0.4);
+            background: rgba(20, 30, 20, 0.7);
             border: 1px solid var(--army-green);
-            padding: 30px;
+            padding: 25px;
             text-decoration: none;
             color: inherit;
             position: relative;
-            transition: 0.3s;
-            clip-path: polygon(0 0, 95% 0, 100% 15%, 100% 100%, 5% 100%, 0 85%); /* 角を少し削る */
+            transition: 0.2s;
+            clip-path: polygon(0 0, 95% 0, 100% 15%, 100% 100%, 5% 100%, 0 85%);
         }
 
         .tool-card:hover {
             background: rgba(176, 255, 46, 0.1);
             border-color: var(--neon-lime);
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(176, 255, 46, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(176, 255, 46, 0.2);
         }
 
         .tool-card h3 {
             margin: 0 0 10px 0;
             color: var(--neon-lime);
-            border-left: 4px solid var(--neon-lime);
+            font-size: 1.1rem;
+            border-left: 3px solid var(--neon-lime);
             padding-left: 10px;
         }
 
         .tool-card p {
             font-size: 0.85rem;
             opacity: 0.8;
-            margin: 0;
+            line-height: 1.6;
         }
 
         footer {
+            margin-top: 100px;
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid var(--army-green);
+            padding: 40px 20px;
             text-align: center;
-            padding: 40px;
+        }
+
+        .footer-links {
+            margin-bottom: 30px;
+        }
+
+        .footer-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-lime);
+            border-bottom: 1px solid var(--neon-lime);
+        }
+
+        .copyright {
+            font-size: 0.75rem;
+            line-height: 1.8;
+            opacity: 0.6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .system-tag {
             font-size: 0.7rem;
-            letter-spacing: 2px;
-            opacity: 0.5;
+            color: var(--neon-lime);
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>SYSTEM: VOL-CALC ∇</h1>
+    <h1>VOLFORCE CALC ∇</h1>
 </header>
 
 <div class="container">
     <a href="vol-to-score.html" class="tool-card">
-        <h3>TARGET SCORE</h3>
-        <p>目標VFから必要なスコアを算出します。</p>
+        <h3>目標スコア算出</h3>
+        <p>目標とするVF値に到達するために必要な各レベルのスコアを逆算します。</p>
     </a>
     <a href="score-hayami.html" class="tool-card">
-        <h3>SCORE TABLE</h3>
-        <p>目標VFとメダルの相関図を表示します。</p>
+        <h3>スコア・VF早見表</h3>
+        <p>各レベルとスコア、クリアランクに対するVF値の相関図を確認できます。</p>
     </a>
     <a href="solo-vol.html" class="tool-card">
-        <h3>CALCULATE VF</h3>
-        <p>リザルト値を元に単曲VFを算出します。</p>
+        <h3>単曲VF計算</h3>
+        <p>リザルト画面の数値を入力し、そのプレイで得られる正確なVFを算出します。</p>
     </a>
     <a href="vol-hayami.html" class="tool-card">
-        <h3>VF QUICK REF</h3>
-        <p>メダル基準のVF到達度を可視化します。</p>
+        <h3>VF到達目安表</h3>
+        <p>特定のVF帯に到達するための代表的な指標を一覧で表示します。</p>
     </a>
 </div>
 
 <footer>
-    <div style="margin-bottom: 10px;">
-        <a href="rule.html" style="color: inherit; margin: 0 10px;">TERMS</a>
-        <a href="contact.html" style="color: inherit; margin: 0 10px;">CONTACT</a>
+    <div class="footer-links">
+        <a href="/rule">利用規約</a>
+        <a href="/contact">お問い合わせ</a>
     </div>
-    <p>OPERATING UNDER PROTOCOL: SDVX-VII-TACTICAL</p>
+    
+    <div class="system-tag">DECODER PROTOCOL: SDVX-VII-UNIT</div>
+    
+    <div class="copyright">
+        本ツールはファンによる非公式ツールです。<br>
+        SOUND VOLTEXは株式会社コナミアミューズメントの登録商標です。<br>
+        ©Konami Amusement / ©2026 sdvx-sco-vol-tool
+    </div>
 </footer>
 
 </body>
