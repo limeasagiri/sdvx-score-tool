@@ -103,16 +103,21 @@
 
     .controls-inner {
         background: var(--panel-bg); padding: 14px; border: 1px solid var(--army-green);
-        display: flex; flex-direction: column; gap: 10px;
+        display: flex; flex-wrap: wrap; gap: 12px;
         clip-path: polygon(0 0, 100% 0, 100% 90%, 97% 100%, 0 100%);
     }
-    .control-row { display: flex; gap: 10px; }
-    .control-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-    label.title { font-size: 9px; color: var(--neon-lime); font-weight: bold; letter-spacing: 0.5px; }
+    .control-group { 
+        flex: 1; 
+        min-width: 140px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 4px; 
+    }
+    label.title { font-size: 9px; color: var(--neon-lime); font-weight: bold; letter-spacing: 0.5px; white-space: nowrap; }
     
     select, input {
         padding: 8px; border: 1px solid var(--army-green);
-        background: #000; color: var(--neon-lime); font-size: 13px;
+        background: #000; color: #fff; font-size: 13px; /* テキストを白に変更 */
         outline: none; font-family: monospace;
     }
     select:focus, input:focus { border-color: var(--neon-lime); }
@@ -179,47 +184,45 @@
 
 <div class="header-controls">
     <div class="controls-inner">
-        <div class="control-row">
-            <div class="control-group">
-                <label class="title">目標VF CLASS / Rank</label>
-                <div style="display: flex; gap: 4px;">
-                    <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
-                        <option value="1">1 Sienna</option>
-                        <option value="2">2 Cobalt</option>
-                        <option value="3">3 Dandelion</option>
-                        <option value="4">4 Cyan</option>
-                        <option value="5">5 Scarlet</option>
-                        <option value="6">6 Coral</option>
-                        <option value="7">7 Argento</option>
-                        <option value="8">8 Eldora</option>
-                        <option value="9">9 Crimson</option>
-                        <option value="10" selected>10 Imperial</option>
-                    </select>
-                    <select id="vfClass" onchange="applyRankClass()" style="flex: 1;">
-                        <option value="0" selected>I</option>
-                        <option value="1">II</option>
-                        <option value="2">III</option>
-                        <option value="3">IV</option>
-                    </select>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="title">参照MEDAL</label>
-                <select id="medal" onchange="render()">
-                    <option value="PUC">PUC</option>
-                    <option value="UC">UC</option>
-                    <option value="MAXXIVE" selected>MAXXIVE</option>
-                    <option value="EXCESSIVE">EXCESSIVE</option>
-                    <option value="EFFECTIVE">EFFECTIVE</option>
+        <div class="control-group">
+            <label class="title">目標VF CLASS / Rank</label>
+            <div style="display: flex; gap: 4px;">
+                <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
+                    <option value="1">1 Sienna</option>
+                    <option value="2">2 Cobalt</option>
+                    <option value="3">3 Dandelion</option>
+                    <option value="4">4 Cyan</option>
+                    <option value="5">5 Scarlet</option>
+                    <option value="6">6 Coral</option>
+                    <option value="7">7 Argento</option>
+                    <option value="8">8 Eldora</option>
+                    <option value="9">9 Crimson</option>
+                    <option value="10" selected>10 Imperial</option>
+                </select>
+                <select id="vfClass" onchange="applyRankClass()" style="flex: 1;">
+                    <option value="0" selected>I</option>
+                    <option value="1">II</option>
+                    <option value="2">III</option>
+                    <option value="3">IV</option>
                 </select>
             </div>
         </div>
-        <div class="control-row">
-            <div class="control-group">
-                <label class="title" id="targetLabel">目標VF(手動入力)</label>
-                <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
-                <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
-            </div>
+
+        <div class="control-group">
+            <label class="title" id="targetLabel">目標VF(自由入力)</label>
+            <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
+            <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
+        </div>
+
+        <div class="control-group">
+            <label class="title">参照MEDAL</label>
+            <select id="medal" onchange="render()">
+                <option value="PUC">PUC</option>
+                <option value="UC">UC</option>
+                <option value="MAXXIVE" selected>MAXXIVE</option>
+                <option value="EXCESSIVE">EXCESSIVE</option>
+                <option value="EFFECTIVE">EFFECTIVE</option>
+            </select>
         </div>
     </div>
 </div>
@@ -388,3 +391,4 @@ window.onload = render;
 </script>
 </body>
 </html>
+ 
