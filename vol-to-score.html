@@ -99,11 +99,10 @@
         .panel { background: var(--card-bg); border: 1px solid var(--army-green); padding: 10px; clip-path: polygon(0 0, 98% 0, 100% 10%, 100% 100%, 2% 100%, 0 90%); }
         .vf-value { font-size: 2rem; font-weight: bold; color: var(--neon-lime); line-height: 1.2; }
         
-        .input-title { display: block; font-size: 0.65rem; color: var(--neon-lime); margin-bottom: 3px; letter-spacing: 1px; }
+        .input-title { display: block; font-size: 0.65rem; color: var(--neon-lime); margin-bottom: 3px; letter-spacing: 0.5px; white-space: nowrap; }
         
         select, input { padding: 6px; background: #000; border: 1px solid var(--army-green); color: white; font-size: 0.85rem; width: 100%; box-sizing: border-box; }
         
-        /* ラジオボタンボタン化 */
         .mode-selector { display: flex; gap: 2px; margin-bottom: 8px; }
         .mode-selector input[type="radio"] { display: none; }
         .mode-selector label { 
@@ -123,9 +122,7 @@
             font-weight: bold;
         }
 
-        /* 横並びレイアウト用 */
         .flex-row { display: flex; gap: 8px; align-items: flex-end; }
-        .flex-item { flex: 1; }
 
         /* --- テーブル --- */
         .table-wrapper {
@@ -196,7 +193,7 @@
             
             <div class="flex-row">
                 <div style="flex: 2;">
-                    <span class="input-title">CLASS / Rank</span>
+                    <span class="input-title">目標VF CLASS / Rank</span>
                     <div style="display: flex; gap: 4px;">
                         <select id="classSel" onchange="updateByDropdown()">
                             <option value="1 Sienna">1 Sienna</option><option value="2 Cobalt">2 Cobalt</option><option value="3 Dandelion">3 Dandelion</option>
@@ -210,7 +207,7 @@
                     </div>
                 </div>
                 <div style="flex: 1.2;">
-                    <span class="input-title">手動入力</span>
+                    <span class="input-title">目標VF(自由入力)</span>
                     <input type="number" id="customVF" step="0.05" oninput="updateByInput()" placeholder="値">
                 </div>
             </div>
@@ -243,7 +240,7 @@
 <footer>©2026 sdvx-sco-vol-tool</footer>
 
 <script>
-// --- [スクリプト部分はロジック不変のため省略せず維持] ---
+// --- [ロジックは一切変更なし] ---
 function toggleMenu() {
     document.getElementById('sideMenu').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('show');
@@ -315,7 +312,7 @@ function render() {
     const vf = Math.floor((currentStandardVF + 0.00001) / 0.05) * 0.05;
     let dispVal = (fmt === "int") ? Math.floor(vf * 20) : (fmt === "p1") ? (vf * 2).toFixed(1) : vf.toFixed(3);
     document.getElementById('dispVF').innerText = dispVal;
-    document.getElementById('rawVF').innerText = `総合VOLFORCE換算: ${currentStandardVF.toFixed(3)}`;
+    document.getElementById('rawVF').innerText = `総合換算: ${currentStandardVF.toFixed(3)}`;
 
     let levels = [];
     for (let l = 20.9; l >= 18.0; l = Math.round((l - 0.1) * 10) / 10) { levels.push(l); }
