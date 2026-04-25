@@ -147,11 +147,11 @@
         td { padding: 8px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); border-right: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
         .level-cell { 
             font-weight: bold; 
-            background-color: #111811; /* 透けないように濃い背景色を指定 */
+            background-color: #111811; 
             position: sticky; 
             left: 0; 
             z-index: 5;
-            border-right: 1px solid rgba(176, 255, 46, 0.4); /* 境目をはっきりさせる線 */
+            border-right: 1px solid rgba(176, 255, 46, 0.4); 
         }
 
         /* スコア配色 */
@@ -247,7 +247,6 @@
 <footer>©2026 sdvx-sco-vol-tool</footer>
 
 <script>
-// --- [ロジックは一切変更なし] ---
 function toggleMenu() {
     document.getElementById('sideMenu').classList.toggle('open');
     document.getElementById('overlay').classList.toggle('show');
@@ -328,28 +327,35 @@ function render() {
 
     let html = '';
     levels.forEach(lv => {
-        const eff = solveFromSheetFormula(vf, lv, 1.00);
-        const exc = solveFromSheetFormula(vf, lv, 1.02);
-        const max = solveFromSheetFormula(vf, lv, 1.04);
-        const uc  = solveFromSheetFormula(vf, lv, 1.06);
+        // 各項目の計算結果を取得
+        const resEff = solveFromSheetFormula(vf, lv, 1.00);
+        const resExc = solveFromSheetFormula(vf, lv, 1.02);
+        const resMax = solveFromSheetFormula(vf, lv, 1.04);
+        const resUc  = solveFromSheetFormula(vf, lv, 1.06);
         const canReachPUC = (lv * 1.05 * 1.10) >= (vf - 0.0001);
         
-        // すべての項目が取得できない（null）かつ PUCも不可能なら、この行（Lv）は表示しない
-        if (eff === null && exc === null && max === null && uc === null && !canReachPUC) return;
-
-        let pucText = "---", pucCls = "val-none";
-        if (canReachPUC) {
-            pucText = "10,000,000";
-            pucCls = (uc && uc >= 9950000) ? "puc-active" : "val-low-score";
-        }
+        // 数値をテキスト形式に変換
         const formatScore = (val) => (val && val < 10000000) ? val.toLocaleString() : "---";
+        const txtEff = formatScore(resEff);
+        const txtExc = formatScore(resExc);
+        const txtMax = formatScore(resMax);
+        const txtUc  = formatScore(resUc);
+        const txtPuc = canReachPUC ? "10,000,000" : "---";
 
+        // すべての項目が "---" であれば、この行そのものを生成しない
+        if (txtEff === "---" && txtExc === "---" && txtMax === "---" && txtUc === "---" && txtPuc === "---") {
+            return;
+        }
+
+        // 行の生成（算出したテキストを適用）
+        const pucCls = (canReachPUC && resUc && resUc >= 9950000) ? "puc-active" : "val-low-score";
+        
         html += `<tr><td class="level-cell">${lv % 1 === 0 ? lv.toFixed(0) : lv.toFixed(1)}</td>`;
-        html += `<td class="${getScoreClass(eff, 'eff')}">${formatScore(eff)}</td>`;
-        html += `<td class="${getScoreClass(exc, 'exc')}">${formatScore(exc)}</td>`;
-        html += `<td class="${getScoreClass(max, 'max')}">${formatScore(max)}</td>`;
-        html += `<td class="${getScoreClass(uc, 'uc')}">${formatScore(uc)}</td>`;
-        html += `<td class="${pucCls}">${pucText}</td></tr>`;
+        html += `<td class="${getScoreClass(resEff, 'eff')}">${txtEff}</td>`;
+        html += `<td class="${getScoreClass(resExc, 'exc')}">${txtExc}</td>`;
+        html += `<td class="${getScoreClass(resMax, 'max')}">${txtMax}</td>`;
+        html += `<td class="${getScoreClass(resUc, 'uc')}">${txtUc}</td>`;
+        html += `<td class="${pucCls}">${txtPuc}</td></tr>`;
     });
     document.getElementById('tableBody').innerHTML = html;
 }
