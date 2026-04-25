@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
     :root {
-        --bg-color: #0a0c10; /* サイトに合わせた深い背景 */
+        --bg-color: #0a0c10;
         --panel-bg: #161b22;
-        --accent-cyan: #00ffcc; /* エメラルドグリーン */
+        --accent-cyan: #00ffcc;
         --text-main: #e6edf3;
         --border-color: #30363d;
         --tab-inactive: #21262d;
     }
 
     body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
         background: var(--bg-color);
         color: var(--text-main);
         margin: 0;
@@ -23,6 +23,7 @@
         flex-direction: column;
         height: 100vh;
         overflow: hidden;
+        -webkit-font-smoothing: antialiased;
     }
 
     /* ヘッダーバー */
@@ -36,9 +37,10 @@
     }
     .app-title { 
         font-size: 16px; 
-        font-weight: bold; 
+        font-weight: 800; 
         color: var(--accent-cyan); 
-        text-shadow: 0 0 10px rgba(0, 255, 204, 0.3); 
+        text-shadow: 0 0 12px rgba(0, 255, 204, 0.3); 
+        letter-spacing: 0.5px;
     }
 
     /* ハンバーガーボタン */
@@ -46,27 +48,30 @@
         width: 36px; height: 36px;
         display: flex; flex-direction: column; justify-content: center; align-items: center;
         gap: 5px; cursor: pointer; z-index: 1001;
-        background: var(--tab-inactive); border: 1px solid var(--border-color); border-radius: 6px;
+        background: var(--tab-inactive); border: 1px solid var(--border-color); border-radius: 8px;
+        transition: background 0.2s;
     }
-    .menu-btn span { width: 20px; height: 2px; background: var(--accent-cyan); border-radius: 2px; transition: 0.3s; }
+    .menu-btn:active { background: #30363d; }
+    .menu-btn span { width: 20px; height: 2px; background: var(--accent-cyan); border-radius: 2px; }
 
     /* サイドメニュー */
     .drawer-overlay {
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.8); display: none; z-index: 999;
+        background: rgba(0, 0, 0, 0.85); display: none; z-index: 999;
+        backdrop-filter: blur(2px);
     }
     .drawer-overlay.open { display: block; }
 
     .drawer {
         position: fixed; top: 0; right: -280px; width: 280px; height: 100vh;
         background: var(--panel-bg); border-left: 1px solid var(--border-color);
-        box-shadow: -5px 0 20px rgba(0,0,0,0.5); z-index: 1000;
+        box-shadow: -10px 0 30px rgba(0,0,0,0.5); z-index: 1000;
         transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 60px 0 20px;
         display: flex; flex-direction: column;
     }
     .drawer.open { right: 0; }
     
-    .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+    .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; }
     .menu-item { 
         padding: 16px 25px; border-bottom: 1px solid var(--border-color); 
         color: var(--text-main); font-size: 14px; cursor: pointer;
@@ -86,64 +91,66 @@
     .view-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0; }
     .tab {
         flex: 1; padding: 10px 4px; background: var(--tab-inactive); border: 1px solid var(--border-color);
-        border-radius: 6px; color: #8b949e; font-size: 11px; text-align: center; cursor: pointer;
-        line-height: 1.2; transition: 0.2s;
+        border-radius: 8px; color: #8b949e; font-size: 11px; text-align: center; cursor: pointer;
+        line-height: 1.3; transition: 0.2s; font-weight: 600;
     }
     .tab.active { 
         background: rgba(0, 255, 204, 0.1); 
         color: var(--accent-cyan); 
-        font-weight: bold; 
         border-color: var(--accent-cyan); 
-        box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+        box-shadow: 0 0 10px rgba(0, 255, 204, 0.15);
     }
 
-    /* コントロール */
+    /* コントロールパネル */
     .header-controls { flex-shrink: 0; }
     .controls-inner {
-        background: var(--panel-bg); padding: 12px; border-radius: 12px;
-        border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px;
+        background: var(--panel-bg); padding: 14px; border-radius: 14px;
+        border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
     .control-row { display: flex; gap: 10px; }
-    .control-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-    label.title { font-size: 10px; color: #8b949e; font-weight: bold; }
+    .control-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    label.title { font-size: 10px; color: #8b949e; font-weight: 800; letter-spacing: 0.5px; }
     .step-hint { font-size: 9px; color: #6e7681; margin-top: 2px; }
     
     select, input {
-        padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);
+        padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);
         background: var(--bg-color); color: #fff; font-size: 13px; outline: none;
+        transition: border-color 0.2s;
     }
     select:focus, input:focus { border-color: var(--accent-cyan); }
 
     /* テーブルエリア */
     .table-container {
-        flex-grow: 1; overflow: auto; border-radius: 12px;
+        flex-grow: 1; overflow: auto; border-radius: 14px;
         border: 1px solid var(--border-color); background: var(--bg-color); margin-top: 10px;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
     }
     table { border-collapse: collapse; font-size: 11px; text-align: center; table-layout: fixed; width: max-content; min-width: 100%; }
     thead th {
-        background: #161b22; color: var(--accent-cyan); padding: 10px 8px;
+        background: #161b22; color: var(--accent-cyan); padding: 12px 8px;
         position: sticky; top: 0; z-index: 100; border: 1px solid var(--border-color);
-        width: 110px;
+        width: 110px; font-weight: 800;
     }
     .level-col {
-        background: #0d1117 !important; color: #fff; font-weight: bold;
-        position: sticky; left: 0; z-index: 110; width: 75px !important; border-right: 2px solid var(--accent-cyan) !important;
+        background: #0d1117 !important; color: #fff; font-weight: 900;
+        position: sticky; left: 0; z-index: 110; width: 75px !important; border-right: 2.5px solid var(--accent-cyan) !important;
     }
-    td { padding: 10px 2px; border: 1px solid var(--border-color); }
+    td { padding: 12px 2px; border: 1px solid var(--border-color); }
 
-    .cell-content { display: flex; flex-direction: column; line-height: 1.3; }
-    .main-line { font-weight: bold; font-size: 11px; }
-    .sub-line { font-size: 9px; opacity: 0.7; margin-top: 2px; }
+    .cell-content { display: flex; flex-direction: column; line-height: 1.4; }
+    .main-line { font-weight: 700; font-size: 11px; }
+    .sub-line { font-size: 9px; opacity: 0.6; margin-top: 2px; font-weight: 400; }
     .ref-line { font-size: 16px; color: #484f58; }
 
-    /* 状態別カラー */
-    .eff-active { color: #88cc88; }
-    .exc-active { color: #bb88ff; }
-    .max-active { color: #cccccc; }
-    .uc-active  { color: #ff88bb; }
-    .puc-active { color: #ffff99; font-style: italic; }
-    .rank-aaa-dim { opacity: 0.6; font-weight: normal !important; }
-    .val-none { color: #484f58 !important; }
+    /* メダル・ランクカラー */
+    .eff-active { color: #88cc88; text-shadow: 0 0 5px rgba(136, 204, 136, 0.2); }
+    .exc-active { color: #bb88ff; text-shadow: 0 0 5px rgba(187, 136, 255, 0.2); }
+    .max-active { color: #cbd5e0; }
+    .uc-active  { color: #ff88bb; text-shadow: 0 0 5px rgba(255, 136, 187, 0.2); }
+    .puc-active { color: #ffff99; font-style: italic; text-shadow: 0 0 8px rgba(255, 255, 153, 0.3); }
+    .rank-aaa-dim { opacity: 0.55; font-weight: 500 !important; }
+    .val-none { color: #30363d !important; }
 </style>
 </head>
 <body>
@@ -180,7 +187,7 @@
         <div class="control-row">
             <div class="control-group">
                 <label class="title">VOLFORCE RANK / CLASS</label>
-                <div style="display: flex; gap: 4px;">
+                <div style="display: flex; gap: 6px;">
                     <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
                         <option value="1">1 Sienna</option>
                         <option value="2">2 Cobalt</option>
@@ -230,6 +237,7 @@
 </div>
 
 <script>
+// ロジック系は一切変更せず維持
 let currentViewMode = 'total';
 
 function toggleMenu() {
@@ -368,7 +376,7 @@ function render() {
             cellsHtml += `<td class="${cls}">${content}</td>`;
             prev = current;
         });
-        // 【非表示ロジック】行内に1つも該当データがない場合のみ、行全体を生成しない
+        // 該当データがある場合のみ行を表示するロジックを維持
         if (hasData) bHtml += `<tr>${rowHtml}${cellsHtml}</tr>`;
     });
     tBody.innerHTML = bHtml;
