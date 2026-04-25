@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
     :root {
-        --bg-color: #0a0c10;
-        --panel-bg: #161b22;
-        --accent-cyan: #00ffcc;
-        --text-main: #e6edf3;
-        --border-color: #30363d;
-        --tab-inactive: #21262d;
+        --bg-deep: #0a0e0a;
+        --army-green: #2d3b2d;
+        --neon-lime: #b0ff2e;
+        --text-main: #e0eee0;
+        --line-sub: rgba(176, 255, 46, 0.1);
+        --panel-bg: rgba(20, 30, 20, 0.85);
+        --border-color: #2d3b2d;
     }
 
     body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-        background: var(--bg-color);
+        font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+        background-color: var(--bg-deep);
         color: var(--text-main);
         margin: 0;
         padding: 10px;
@@ -23,140 +24,135 @@
         flex-direction: column;
         height: 100vh;
         overflow: hidden;
-        -webkit-font-smoothing: antialiased;
+        background-image: 
+            linear-gradient(var(--line-sub) 1px, transparent 1px),
+            linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
+        background-size: 30px 30px;
     }
 
-    /* ヘッダーバー */
+    /* ヘッダー */
     .header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
         flex-shrink: 0;
-        padding: 0 5px;
+        padding: 5px 10px;
+        border-bottom: 1px solid var(--neon-lime);
+        background: rgba(0, 0, 0, 0.5);
     }
     .app-title { 
-        font-size: 16px; 
-        font-weight: 800; 
-        color: var(--accent-cyan); 
-        text-shadow: 0 0 12px rgba(0, 255, 204, 0.3); 
-        letter-spacing: 0.5px;
+        font-size: 14px; 
+        font-weight: bold; 
+        color: var(--neon-lime); 
+        text-shadow: 0 0 10px var(--neon-lime);
+        letter-spacing: 2px;
     }
 
-    /* ハンバーガーボタン */
+    /* ハンバーガーボタン（タクティカル） */
     .menu-btn {
-        width: 36px; height: 36px;
+        width: 34px; height: 34px;
         display: flex; flex-direction: column; justify-content: center; align-items: center;
-        gap: 5px; cursor: pointer; z-index: 1001;
-        background: var(--tab-inactive); border: 1px solid var(--border-color); border-radius: 8px;
-        transition: background 0.2s;
+        gap: 4px; cursor: pointer; z-index: 1001;
+        background: var(--army-green); 
+        clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+        transition: 0.2s;
     }
-    .menu-btn:active { background: #30363d; }
-    .menu-btn span { width: 20px; height: 2px; background: var(--accent-cyan); border-radius: 2px; }
+    .menu-btn span { width: 18px; height: 2px; background: var(--neon-lime); border-radius: 1px; }
 
-    /* サイドメニュー */
+    /* サイドメニュー（ドロワー） */
     .drawer-overlay {
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.85); display: none; z-index: 999;
-        backdrop-filter: blur(2px);
+        background: rgba(0, 0, 0, 0.8); display: none; z-index: 999;
+        backdrop-filter: blur(4px);
     }
     .drawer-overlay.open { display: block; }
 
     .drawer {
         position: fixed; top: 0; right: -280px; width: 280px; height: 100vh;
-        background: var(--panel-bg); border-left: 1px solid var(--border-color);
-        box-shadow: -10px 0 30px rgba(0,0,0,0.5); z-index: 1000;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding: 60px 0 20px;
-        display: flex; flex-direction: column;
+        background: var(--bg-deep); border-left: 2px solid var(--neon-lime);
+        z-index: 1000; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        padding: 60px 0 20px;
     }
     .drawer.open { right: 0; }
-    
-    .menu-label { padding: 15px 25px 5px; font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1.5px; font-weight: bold; }
+    .menu-label { padding: 15px 25px 5px; font-size: 10px; color: var(--neon-lime); opacity: 0.6; letter-spacing: 2px; font-weight: bold; }
     .menu-item { 
-        padding: 16px 25px; border-bottom: 1px solid var(--border-color); 
-        color: var(--text-main); font-size: 14px; cursor: pointer;
-        display: block; text-decoration: none;
-        transition: 0.2s;
+        padding: 16px 25px; border-bottom: 1px solid var(--army-green); 
+        color: var(--text-main); font-size: 13px; cursor: pointer;
+        display: block; text-decoration: none; transition: 0.2s;
     }
-    
     .menu-item.current {
-        color: var(--accent-cyan) !important;
-        font-weight: bold;
-        background: rgba(0, 255, 204, 0.08) !important;
-        border-left: 4px solid var(--accent-cyan);
-        padding-left: 21px;
+        background: rgba(176, 255, 46, 0.1) !important;
+        color: var(--neon-lime); font-weight: bold;
+        border-left: 4px solid var(--neon-lime);
     }
 
-    /* メインタブ */
+    /* タブ・コントロール */
     .view-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0; }
     .tab {
-        flex: 1; padding: 10px 4px; background: var(--tab-inactive); border: 1px solid var(--border-color);
-        border-radius: 8px; color: #8b949e; font-size: 11px; text-align: center; cursor: pointer;
-        line-height: 1.3; transition: 0.2s; font-weight: 600;
+        flex: 1; padding: 10px 2px; background: rgba(45, 59, 45, 0.3); border: 1px solid var(--army-green);
+        color: #889988; font-size: 10px; text-align: center; cursor: pointer;
+        clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 0 100%);
+        line-height: 1.2; font-weight: bold;
     }
     .tab.active { 
-        background: rgba(0, 255, 204, 0.1); 
-        color: var(--accent-cyan); 
-        border-color: var(--accent-cyan); 
-        box-shadow: 0 0 10px rgba(0, 255, 204, 0.15);
+        background: var(--army-green); color: var(--neon-lime); 
+        border: 1px solid var(--neon-lime); box-shadow: 0 0 10px rgba(176, 255, 46, 0.2);
     }
 
-    /* コントロールパネル */
-    .header-controls { flex-shrink: 0; }
     .controls-inner {
-        background: var(--panel-bg); padding: 14px; border-radius: 14px;
-        border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        background: var(--panel-bg); padding: 14px; border: 1px solid var(--army-green);
+        display: flex; flex-direction: column; gap: 10px;
+        clip-path: polygon(0 0, 100% 0, 100% 90%, 97% 100%, 0 100%);
     }
     .control-row { display: flex; gap: 10px; }
-    .control-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-    label.title { font-size: 10px; color: #8b949e; font-weight: 800; letter-spacing: 0.5px; }
-    .step-hint { font-size: 9px; color: #6e7681; margin-top: 2px; }
+    .control-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    label.title { font-size: 9px; color: var(--neon-lime); font-weight: bold; letter-spacing: 1px; }
     
     select, input {
-        padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);
-        background: var(--bg-color); color: #fff; font-size: 13px; outline: none;
-        transition: border-color 0.2s;
+        padding: 8px; border: 1px solid var(--army-green);
+        background: #000; color: var(--neon-lime); font-size: 13px;
+        outline: none; font-family: monospace;
     }
-    select:focus, input:focus { border-color: var(--accent-cyan); }
+    select:focus, input:focus { border-color: var(--neon-lime); }
 
-    /* テーブルエリア */
+    /* テーブル */
     .table-container {
-        flex-grow: 1; overflow: auto; border-radius: 14px;
-        border: 1px solid var(--border-color); background: var(--bg-color); margin-top: 10px;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        flex-grow: 1; overflow: auto; border: 1px solid var(--army-green);
+        background: rgba(0, 0, 0, 0.6); margin-top: 10px;
     }
     table { border-collapse: collapse; font-size: 11px; text-align: center; table-layout: fixed; width: max-content; min-width: 100%; }
     thead th {
-        background: #161b22; color: var(--accent-cyan); padding: 12px 8px;
-        position: sticky; top: 0; z-index: 100; border: 1px solid var(--border-color);
-        width: 110px; font-weight: 800;
+        background: var(--army-green); color: var(--neon-lime); padding: 10px 8px;
+        position: sticky; top: 0; z-index: 100; border: 1px solid var(--bg-deep);
     }
     .level-col {
-        background: #0d1117 !important; color: #fff; font-weight: 900;
-        position: sticky; left: 0; z-index: 110; width: 75px !important; border-right: 2.5px solid var(--accent-cyan) !important;
+        background: #000 !important; color: var(--neon-lime); font-weight: 900;
+        position: sticky; left: 0; z-index: 110; border-right: 2px solid var(--neon-lime) !important;
+        text-shadow: 0 0 5px var(--neon-lime);
     }
-    td { padding: 12px 2px; border: 1px solid var(--border-color); }
+    td { padding: 10px 2px; border: 1px solid var(--army-green); }
 
-    .cell-content { display: flex; flex-direction: column; line-height: 1.4; }
-    .main-line { font-weight: 700; font-size: 11px; }
-    .sub-line { font-size: 9px; opacity: 0.6; margin-top: 2px; font-weight: 400; }
-    .ref-line { font-size: 16px; color: #484f58; }
+    .cell-content { display: flex; flex-direction: column; line-height: 1.3; }
+    .main-line { font-weight: bold; font-family: monospace; }
+    .sub-line { font-size: 8px; opacity: 0.6; margin-top: 2px; }
+    .ref-line { font-size: 14px; color: var(--army-green); }
 
-    /* メダル・ランクカラー */
-    .eff-active { color: #88cc88; text-shadow: 0 0 5px rgba(136, 204, 136, 0.2); }
-    .exc-active { color: #bb88ff; text-shadow: 0 0 5px rgba(187, 136, 255, 0.2); }
-    .max-active { color: #cbd5e0; }
-    .uc-active  { color: #ff88bb; text-shadow: 0 0 5px rgba(255, 136, 187, 0.2); }
-    .puc-active { color: #ffff99; font-style: italic; text-shadow: 0 0 8px rgba(255, 255, 153, 0.3); }
-    .rank-aaa-dim { opacity: 0.55; font-weight: 500 !important; }
-    .val-none { color: #30363d !important; }
+    /* メダル・カラー（タクティカル版） */
+    .eff-active { color: #88cc88; }
+    .exc-active { color: #aa88ff; }
+    .max-active { color: #aab8aa; }
+    .uc-active  { color: #ff88aa; }
+    .puc-active { color: #ffff88; font-style: italic; text-shadow: 0 0 5px rgba(255, 255, 136, 0.5); }
+    .rank-aaa-dim { opacity: 0.5; font-weight: normal !important; }
+    .val-none { color: #222 !important; }
+    .step-hint { font-size: 8px; color: #556655; margin-top: 2px; }
 </style>
 </head>
 <body>
 
 <div class="header-bar">
-    <div class="app-title">目標スコア早見表 ver.∇</div>
+    <div class="app-title">▼ TARGET-SCORE-MATRIX ∇</div>
     <div class="menu-btn" onclick="toggleMenu()">
         <span></span><span></span><span></span>
     </div>
@@ -165,29 +161,29 @@
 <div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
 
 <div class="drawer" id="drawer">
-    <div class="menu-label">Navi</div>
-    <a href="https://otogetool.wixsite.com/vol-calculator" target="_blank" class="menu-item">TOP</a>
-    <a href="https://otogetool.wixsite.com/vol-calculator/vol-to-score" target="_blank" class="menu-item">目標スコア算出</a>
+    <div class="menu-label">NAVIGATOR</div>
+    <a href="index.html" class="menu-item">TACTICAL HUB (TOP)</a>
+    <a href="vol-to-score.html" class="menu-item">目標スコア算出</a>
     <div class="menu-item current" onclick="toggleMenu()">目標スコア早見表</div>
-    <a href="https://otogetool.wixsite.com/vol-calculator/solo-vol" target="_blank" class="menu-item">単曲VOLFORCE算出</a>
-    <a href="https://otogetool.wixsite.com/vol-calculator/vol-hayami" target="_blank" class="menu-item">VOLFORCE早見表</a>
-    <div class="menu-label">Information</div>
-    <a href="https://otogetool.wixsite.com/vol-calculator/rule" target="_blank" class="menu-item">利用規約</a>
-    <a href="https://otogetool.wixsite.com/vol-calculator/contact" target="_blank" class="menu-item">お問い合わせ</a>
+    <a href="solo-vol.html" class="menu-item">単曲VF計算</a>
+    <a href="vol-hayami.html" class="menu-item">VF到達目安表</a>
+    <div class="menu-label">INFORMATION</div>
+    <a href="/rule" class="menu-item">利用規約</a>
+    <a href="/contact" class="menu-item">お問い合わせ</a>
 </div>
 
 <div class="view-tabs" id="viewTabs">
-    <div class="tab active" data-mode="total" onclick="switchView('total')">公式総合<br>(XX.xxx)</div>
-    <div class="tab" data-mode="single" onclick="switchView('single')">公式単曲<br>(XXX)</div>
-    <div class="tab" data-mode="tool" onclick="switchView('tool')">Tool形式<br>(XX.x)</div>
+    <div class="tab active" data-mode="total" onclick="switchView('total')">TOTAL<br>(XX.xxx)</div>
+    <div class="tab" data-mode="single" onclick="switchView('single')">SINGLE<br>(XXX)</div>
+    <div class="tab" data-mode="tool" onclick="switchView('tool')">TOOL<br>(XX.x)</div>
 </div>
 
 <div class="header-controls">
     <div class="controls-inner">
         <div class="control-row">
             <div class="control-group">
-                <label class="title">VOLFORCE RANK / CLASS</label>
-                <div style="display: flex; gap: 6px;">
+                <label class="title">VF RANK / CLASS</label>
+                <div style="display: flex; gap: 4px;">
                     <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
                         <option value="1">1 Sienna</option>
                         <option value="2">2 Cobalt</option>
@@ -223,7 +219,7 @@
             <div class="control-group">
                 <label class="title" id="targetLabel">TARGET VOLFORCE</label>
                 <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
-                <div class="step-hint" id="stepGuide">TARGET VOLFORCEは、0.05刻みで変動します。</div>
+                <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
             </div>
         </div>
     </div>
@@ -237,7 +233,7 @@
 </div>
 
 <script>
-// ロジック系は一切変更せず維持
+// ロジックと非表示コードはそのまま維持
 let currentViewMode = 'total';
 
 function toggleMenu() {
@@ -282,13 +278,13 @@ function switchView(mode) {
     currentViewMode = mode;
     if (mode === 'total') {
         input.value = totalVF.toFixed(2); input.step = "0.05"; input.max = "24.10";
-        guide.innerText = "TARGET VOLFORCEは、0.05刻みで変動します。";
+        guide.innerText = "STEP: 0.05 increments";
     } else if (mode === 'single') {
         input.value = Math.round(totalVF * 20); input.step = "1"; input.max = "482";
-        guide.innerText = "TARGET VOLFORCEは、1刻みで変動します。";
+        guide.innerText = "STEP: 1 increments";
     } else if (mode === 'tool') {
         input.value = (totalVF * 2).toFixed(1); input.step = "0.1"; input.max = "48.2";
-        guide.innerText = "TARGET VOLFORCEは、0.1刻みで変動します。";
+        guide.innerText = "STEP: 0.1 increments";
     }
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.tab[data-mode="${mode}"]`).classList.add('active');
@@ -345,7 +341,7 @@ function render() {
     const tBody = document.getElementById('tableBody');
     const hRow = document.getElementById('headerRow');
     let vfCols = [];
-    let hHtml = '<th class="level-col">Lv. / VF</th>';
+    let hHtml = '<th class="level-col">LV / VF</th>';
     for(let i=10; i>=-10; i--) {
         let v = Math.max(0.05, Math.min(24.1, parseFloat((target + (i * 0.05)).toFixed(2))));
         vfCols.push(v);
@@ -376,7 +372,6 @@ function render() {
             cellsHtml += `<td class="${cls}">${content}</td>`;
             prev = current;
         });
-        // 該当データがある場合のみ行を表示するロジックを維持
         if (hasData) bHtml += `<tr>${rowHtml}${cellsHtml}</tr>`;
     });
     tBody.innerHTML = bHtml;
