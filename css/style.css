@@ -11,15 +11,167 @@
 
 /* 全ページ共通の基本スタイル */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
     background-color: var(--bg-deep);
     color: var(--text-main);
     margin: 0;
-    padding: 10px;
+    padding: 0; /* JSでヘッダーが入るので0に調整 */
     background-image: 
         linear-gradient(var(--line-sub) 1px, transparent 1px),
         linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
     background-size: 30px 30px;
+    min-height: 100vh;
 }
 
-/* 以前お渡しした共通パーツ（.header-bar, .drawer など）のCSSをここに流し込む */
+/* ヘッダーバー */
+.header-bar {
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom: 2px solid var(--neon-lime);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.app-title {
+    color: var(--neon-lime);
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--neon-lime);
+}
+
+/* メニューボタン（三本線） */
+.menu-btn {
+    width: 30px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.menu-btn span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--neon-lime);
+    box-shadow: 0 0 5px var(--neon-lime);
+}
+
+/* ドロワーメニュー */
+.drawer {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 280px;
+    height: 100%;
+    background: rgba(10, 14, 10, 0.98);
+    border-left: 1px solid var(--neon-lime);
+    z-index: 1200;
+    transition: 0.3s;
+    padding-top: 60px;
+}
+
+.drawer.open { right: 0; }
+
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    z-index: 1100;
+}
+
+.drawer-overlay.open { display: block; }
+
+.menu-label {
+    padding: 20px 25px 10px;
+    font-size: 0.7rem;
+    color: var(--neon-lime);
+    opacity: 0.6;
+    letter-spacing: 2px;
+}
+
+.menu-item {
+    display: block;
+    padding: 15px 25px;
+    color: var(--text-main);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(176, 255, 46, 0.05);
+    transition: 0.2s;
+}
+
+.menu-item:hover, .menu-item.current {
+    background: rgba(176, 255, 46, 0.1);
+    color: var(--neon-lime);
+}
+
+/* メインコンテンツ（カードデザイン） */
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    gap: 20px;
+}
+
+.tool-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: 0.3s;
+    position: relative;
+    clip-path: polygon(0 0, 95% 0, 100% 20%, 100% 100%, 5% 100%, 0 80%);
+}
+
+.tool-card:hover {
+    border-color: var(--neon-lime);
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(176, 255, 46, 0.2);
+}
+
+.tool-card h3 {
+    margin: 0 0 10px;
+    color: var(--neon-lime);
+}
+
+.tool-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* フッター */
+footer {
+    margin-top: 60px;
+    padding: 40px 20px;
+    background: rgba(0,0,0,0.5);
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-links { margin-bottom: 20px; }
+.footer-links a { color: var(--text-main); text-decoration: none; margin: 0 15px; font-size: 0.85rem; }
+
+.system-tag {
+    font-family: monospace;
+    color: var(--neon-lime);
+    font-size: 0.75rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.copyright {
+    font-size: 0.7rem;
+    line-height: 1.6;
+    opacity: 0.5;
+}
