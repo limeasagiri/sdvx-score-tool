@@ -1,138 +1,192 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="style.css"> </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>単曲VF計算 - VOLFORCE CALC ∇</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .main-container { padding: 70px 15px 20px; max-width: 800px; margin: 0 auto; }
+        .card { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; margin-bottom: 20px; clip-path: polygon(0 0, 98% 0, 100% 5%, 100% 100%, 2% 100%, 0 95%); }
+        .card h3 { font-size: 0.8rem; color: var(--neon-lime); margin-bottom: 15px; letter-spacing: 2px; border-left: 3px solid var(--neon-lime); padding-left: 8px; }
+        
+        label { font-size: 0.7rem; color: var(--text-main); display: block; margin-bottom: 5px; opacity: 0.8; }
+        input, select { background: #000; border: 1px solid var(--army-green); color: #fff; padding: 10px; width: 100%; box-sizing: border-box; font-size: 1rem; }
+        
+        .tab-container { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tab { flex: 1; text-align: center; background: #1a1a1a; padding: 10px; border: 1px solid var(--army-green); color: var(--text-main); font-size: 0.75rem; cursor: pointer; }
+        .tab.active { border-color: var(--neon-lime); color: var(--neon-lime); background: rgba(176, 255, 46, 0.1); font-weight: bold; }
+
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .result-table th { font-size: 0.65rem; color: var(--neon-lime); padding: 8px; border-bottom: 1px solid var(--army-green); }
+        .result-table td { padding: 5px; border: 1px solid rgba(176, 255, 46, 0.1); position: relative; }
+        .label-cell { font-size: 0.75rem; font-weight: bold; color: var(--text-main); }
+        
+        .btn-x { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--neon-lime); cursor: pointer; font-size: 0.8rem; opacity: 0.5; z-index: 2; }
+        .btn-x:hover { opacity: 1; }
+        
+        .clear-btn-main { background: none; border: 1px solid #ff3366; color: #ff3366; padding: 4px 12px; font-size: 0.7rem; cursor: pointer; margin-bottom: 10px; float: right; }
+
+        .result-box { text-align: center; border-color: var(--neon-lime); }
+        .dual-display { display: flex; border-bottom: 1px solid rgba(176, 255, 46, 0.2); margin-bottom: 15px; }
+        .dual-item { flex: 1; padding: 10px; border-right: 1px solid rgba(176, 255, 46, 0.2); }
+        .dual-item:last-child { border-right: none; }
+        .dual-item .label { font-size: 0.6rem; display: block; color: var(--text-main); opacity: 0.6; }
+        .dual-item .val { font-size: 1.1rem; font-weight: bold; }
+
+        .vf-display { margin: 15px 0; }
+        .vf-display .fixed { font-size: 3.5rem; font-weight: bold; color: var(--neon-lime); line-height: 1; }
+        .vf-display .decimal { font-size: 1.5rem; color: var(--neon-lime); }
+
+        .next-vf-table { width: 100%; margin-top: 20px; font-size: 0.75rem; border-top: 1px solid var(--army-green); }
+        .row-label { color: var(--text-main); opacity: 0.6; padding: 8px 0 4px; font-size: 0.6rem; }
+        .row-val { font-weight: bold; font-size: 0.9rem; padding-bottom: 8px; }
+        .row-medal { color: var(--neon-lime); font-size: 0.65rem; padding-top: 10px; }
+        .row-vf-val { font-size: 0.8rem; opacity: 0.9; }
+        
+        .medal-badge { display: inline-block; padding: 2px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; }
+        .badge-normal { border: 1px solid var(--text-main); color: var(--text-main); }
+        .badge-puc { border: 1px solid #ffff00; color: #ffff00; background: rgba(255,255,0,0.1); }
+        .badge-uc { border: 1px solid #ff3399; color: #ff3399; background: rgba(255,51,153,0.1); }
+        
+        .error-msg { color: #ff3366; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; display: none; }
+        .hidden { display: none; }
+    </style>
+</head>
 <body>
-
-<div class="card">
-    <h3>CORE DATA</h3>
-    <div style="display: flex; gap: 8px;">
-        <div style="flex: 1;">
-            <label>LEVEL</label>
-            <input type="number" id="lv" value="18.5" min="1.0" max="20.9" step="0.1" inputmode="decimal" oninput="calc()">
-        </div>
-        <div style="flex: 1.5;">
-            <label>MEDAL (MANUAL)</label>
-            <select id="medal" onchange="calc()"></select>
-        </div>
-    </div>
-</div>
-
-<div class="tab-container">
-    <div id="tab-score" class="tab active" onclick="switchTab('score')">SCORE INPUT</div>
-    <div id="tab-detail" class="tab" onclick="switchTab('detail')">RESULT DETAIL</div>
-</div>
-
-<div id="section-score" class="card">
-    <button class="clear-btn-main" onclick="clearField('score_input');calc()">CLEAR</button>
-    <label>TARGET SCORE</label>
-    <input type="number" id="score_input" value="10000000" inputmode="numeric" oninput="calc()">
-</div>
-
-<div id="section-detail" class="card hidden">
-    <button class="clear-btn-main" onclick="clearAllDetail()">ALL CLEAR</button>
-    <h3>DETAILED BREAKDOWN</h3>
-    <table class="result-table">
-        <thead>
-            <tr><th style="width:20%">TYPE</th><th>CHIP</th><th>LONG</th><th>TSUMAMI</th></tr>
-        </thead>
-        <tbody>
-            <tr><td class="label-cell">S-CRIT</td>
-                <td><div class="btn-x" onclick="clearField('sc_c');calcDetail()">×</div><input type="number" id="sc_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td><div class="btn-x" onclick="clearField('sc_l');calcDetail()">×</div><input type="number" id="sc_l" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td><div class="btn-x" onclick="clearField('sc_t');calcDetail()">×</div><input type="number" id="sc_t" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-            </tr>
-            <tr><td class="label-cell">CRIT</td>
-                <td><div class="btn-x" onclick="clearField('c_c');calcDetail()">×</div><input type="number" id="c_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td><div class="btn-x" onclick="clearField('c_l');calcDetail()">×</div><input type="number" id="c_l" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td><div class="btn-x" onclick="clearField('c_t');calcDetail()">×</div><input type="number" id="c_t" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-            </tr>
-            <tr><td class="label-cell">NEAR</td>
-                <td><div class="btn-x" onclick="clearField('n_c');calcDetail()">×</div><input type="number" id="n_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td class="disabled-cell"></td><td class="disabled-cell"></td>
-            </tr>
-            <tr><td class="label-cell">ERROR</td>
-                <td><div class="btn-x" onclick="clearField('e_c');calcDetail()">×</div><input type="number" id="e_c" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td><div class="btn-x" onclick="clearField('e_l');calcDetail()">×</div><input type="number" id="e_l" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-                <td><div class="btn-x" onclick="clearField('e_t');calcDetail()">×</div><input type="number" id="e_t" value="0" inputmode="numeric" oninput="calcDetail()"></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<div class="card result-box">
-    <div id="error-display" class="error-msg">CHAIN ERROR DETECTED</div>
-    
-    <div class="dual-display">
-        <div class="dual-item">
-            <span class="label">TOTAL CHAIN</span>
-            <span id="resChain" class="val">---</span>
-        </div>
-        <div class="dual-item">
-            <span class="label">FINAL SCORE</span>
-            <span id="resScore" class="val">0</span>
-        </div>
-    </div>
-
-    <div class="vf-mode-tabs">
-        <div id="vfmode-total" class="tab active" onclick="switchVFMode('total')">
-            <span>総合VF</span><span id="label-total-val" class="vf-sub">(0.000)</span>
-        </div>
-        <div id="vfmode-single" class="tab" onclick="switchVFMode('single')">
-            <span>公式単曲</span><span id="label-single-val" class="vf-sub">(0)</span>
-        </div>
-        <div id="vfmode-vaddict" class="tab" onclick="switchVFMode('vaddict')">
-            <span>Tool</span><span id="label-vaddict-val" class="vf-sub">(0.0)</span>
-        </div>
-    </div>
-
-    <div id="medalBadge" class="medal-badge badge-normal">---</div>
-    
-    <div class="vf-display">
-        <span id="resVF_fixed" class="fixed">---</span>
-        <span id="resVF_decimal" class="decimal"></span>
-    </div>
-
-    <div id="resRank" style="color: var(--neon-lime); font-weight: bold; letter-spacing: 2px; font-size: 14px;">---</div>
-
-    <table class="next-vf-table">
-        <tr>
-            <td class="row-label">TARGET</td>
-            <td class="row-label">GAP</td>
-            <td class="row-label">削減NEAR</td>
-            <td class="row-label">許容NEAR</td>
-        </tr>
-        <tr>
-            <td class="row-val" id="nextScore">---</td>
-            <td class="row-val" id="gap">---</td>
-            <td class="row-val" id="resReduceNear">---</td>
-            <td class="row-val" id="resAllowNear">---</td>
-        </tr>
-        <tr><td colspan="4" id="targetNote" class="target-note">※クリアランク達成を優先した目標です。</td></tr>
-        <tr>
-            <td class="row-medal">PUC</td>
-            <td class="row-medal">UC</td>
-            <td class="row-medal">MAXXIVE</td>
-            <td class="row-medal">EXCESSIVE</td>
-        </tr>
-        <tr>
-            <td class="row-vf-val" id="nvf_puc">---</td>
-            <td class="row-vf-val" id="nvf_uc">---</td>
-            <td class="row-vf-val" id="nvf_mx">---</td>
-            <td class="row-vf-val" id="nvf_ex">---</td>
-        </tr>
-    </table>
-</div>
 
 <script src="common.js"></script>
 
+<div class="main-container">
+    <div class="card">
+        <h3>CORE DATA</h3>
+        <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+                <label>LEVEL</label>
+                <input type="number" id="lv" value="18.5" min="1.0" max="20.9" step="0.1" inputmode="decimal" oninput="calc()">
+            </div>
+            <div style="flex: 1.5;">
+                <label>MEDAL (MANUAL)</label>
+                <select id="medal" onchange="calc()"></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <div id="tab-score" class="tab active" onclick="switchTab('score')">SCORE INPUT</div>
+        <div id="tab-detail" class="tab" onclick="switchTab('detail')">RESULT DETAIL</div>
+    </div>
+
+    <div id="section-score" class="card">
+        <button class="clear-btn-main" onclick="clearField('score_input');calc()">CLEAR</button>
+        <label>TARGET SCORE</label>
+        <input type="number" id="score_input" value="10000000" inputmode="numeric" oninput="calc()">
+    </div>
+
+    <div id="section-detail" class="card hidden">
+        <button class="clear-btn-main" onclick="clearAllDetail()">ALL CLEAR</button>
+        <h3>DETAILED BREAKDOWN</h3>
+        <table class="result-table">
+            <thead>
+                <tr><th style="width:20%">TYPE</th><th>CHIP</th><th>LONG</th><th>TSUMAMI</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="label-cell">S-CRIT</td>
+                    <td><div class="btn-x" onclick="clearField('sc_c');calcDetail()">×</div><input type="number" id="sc_c" value="0" oninput="calcDetail()"></td>
+                    <td><div class="btn-x" onclick="clearField('sc_l');calcDetail()">×</div><input type="number" id="sc_l" value="0" oninput="calcDetail()"></td>
+                    <td><div class="btn-x" onclick="clearField('sc_t');calcDetail()">×</div><input type="number" id="sc_t" value="0" oninput="calcDetail()"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">CRIT</td>
+                    <td><div class="btn-x" onclick="clearField('c_c');calcDetail()">×</div><input type="number" id="c_c" value="0" oninput="calcDetail()"></td>
+                    <td><div class="btn-x" onclick="clearField('c_l');calcDetail()">×</div><input type="number" id="c_l" value="0" oninput="calcDetail()"></td>
+                    <td><div class="btn-x" onclick="clearField('c_t');calcDetail()">×</div><input type="number" id="c_t" value="0" oninput="calcDetail()"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">NEAR</td>
+                    <td><div class="btn-x" onclick="clearField('n_c');calcDetail()">×</div><input type="number" id="n_c" value="0" oninput="calcDetail()"></td>
+                    <td style="background:rgba(255,255,255,0.05)"></td><td style="background:rgba(255,255,255,0.05)"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">ERROR</td>
+                    <td><div class="btn-x" onclick="clearField('e_c');calcDetail()">×</div><input type="number" id="e_c" value="0" oninput="calcDetail()"></td>
+                    <td><div class="btn-x" onclick="clearField('e_l');calcDetail()">×</div><input type="number" id="e_l" value="0" oninput="calcDetail()"></td>
+                    <td><div class="btn-x" onclick="clearField('e_t');calcDetail()">×</div><input type="number" id="e_t" value="0" oninput="calcDetail()"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card result-box">
+        <div id="error-display" class="error-msg">CHAIN ERROR DETECTED</div>
+        
+        <div class="dual-display">
+            <div class="dual-item">
+                <span class="label">TOTAL CHAIN</span>
+                <span id="resChain" class="val">---</span>
+            </div>
+            <div class="dual-item">
+                <span class="label">FINAL SCORE</span>
+                <span id="resScore" class="val">0</span>
+            </div>
+        </div>
+
+        <div class="tab-container" style="margin-bottom: 20px;">
+            <div id="vfmode-total" class="tab active" onclick="switchVFMode('total')" style="font-size:0.65rem">
+                総合VF<br><span id="label-total-val" style="opacity:0.6">(0.000)</span>
+            </div>
+            <div id="vfmode-single" class="tab" onclick="switchVFMode('single')" style="font-size:0.65rem">
+                公式単曲<br><span id="label-single-val" style="opacity:0.6">(0)</span>
+            </div>
+            <div id="vfmode-vaddict" class="tab" onclick="switchVFMode('vaddict')" style="font-size:0.65rem">
+                Tool<br><span id="label-vaddict-val" style="opacity:0.6">(0.0)</span>
+            </div>
+        </div>
+
+        <div id="medalBadge" class="medal-badge badge-normal">---</div>
+        
+        <div class="vf-display">
+            <span id="resVF_fixed" class="fixed">---</span>
+            <span id="resVF_decimal" class="decimal"></span>
+        </div>
+
+        <div id="resRank" style="color: var(--neon-lime); font-weight: bold; letter-spacing: 2px; font-size: 1rem; margin-bottom: 20px;">---</div>
+
+        <table class="next-vf-table">
+            <tr>
+                <td class="row-label">TARGET</td>
+                <td class="row-label">GAP</td>
+                <td class="row-label">削減NEAR</td>
+                <td class="row-label">許容NEAR</td>
+            </tr>
+            <tr>
+                <td class="row-val" id="nextScore">---</td>
+                <td class="row-val" id="gap">---</td>
+                <td class="row-val" id="resReduceNear">---</td>
+                <td class="row-val" id="resAllowNear">---</td>
+            </tr>
+            <tr><td colspan="4" id="targetNote" style="font-size:0.6rem; color:#888; display:none; padding:5px 0;">※クリアランク達成を優先した目標です。</td></tr>
+            <tr>
+                <td class="row-medal">PUC</td>
+                <td class="row-medal">UC</td>
+                <td class="row-medal">MAXXIVE</td>
+                <td class="row-medal">EXCESSIVE</td>
+            </tr>
+            <tr>
+                <td class="row-vf-val" id="nvf_puc">---</td>
+                <td class="row-vf-val" id="nvf_uc">---</td>
+                <td class="row-vf-val" id="nvf_mx">---</td>
+                <td class="row-vf-val" id="nvf_ex">---</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
 <script>
+    // --- ロジック部分は変更なし ---
     let inputMode = 'score';
     let vfDisplayMode = 'total';
-
-    // toggleMenuはcommon.js側で処理するため削除
 
     function clearField(id) { document.getElementById(id).value = ''; }
     function clearAllDetail() {
@@ -277,11 +331,11 @@
         document.getElementById('gap').innerText = score < 10000000 ? (targetScoreValue - score).toLocaleString() : "---";
         document.getElementById('targetNote').style.display = showNote ? "block" : "none";
 
-        const formatVF = (d) => (vfDisplayMode==='total' ? d.floored05.toFixed(3) : (vfDisplayMode==='single' ? d.officialInt : (d.officialInt/10).toFixed(1)));
-        document.getElementById('nvf_puc').innerText = medal >= 1.1 ? "---" : formatVF(getVFData(lv, 10000000, 1.1));
-        document.getElementById('nvf_uc').innerText = medal >= 1.06 ? "---" : formatVF(getVFData(lv, score, 1.06));
-        document.getElementById('nvf_mx').innerText = medal >= 1.04 ? "---" : formatVF(getVFData(lv, score, 1.04));
-        document.getElementById('nvf_ex').innerText = medal >= 1.02 ? "---" : formatVF(getVFData(lv, score, 1.02));
+        const formatVF_val = (d) => (vfDisplayMode==='total' ? d.floored05.toFixed(3) : (vfDisplayMode==='single' ? d.officialInt : (d.officialInt/10).toFixed(1)));
+        document.getElementById('nvf_puc').innerText = medal >= 1.1 ? "---" : formatVF_val(getVFData(lv, 10000000, 1.1));
+        document.getElementById('nvf_uc').innerText = medal >= 1.06 ? "---" : formatVF_val(getVFData(lv, score, 1.06));
+        document.getElementById('nvf_mx').innerText = medal >= 1.04 ? "---" : formatVF_val(getVFData(lv, score, 1.04));
+        document.getElementById('nvf_ex').innerText = medal >= 1.02 ? "---" : formatVF_val(getVFData(lv, score, 1.02));
 
         if (totalChain > 0) {
             const currentPenalty = (ne * 0.5) + (er * 1.0);
@@ -294,9 +348,10 @@
         }
     }
 
-    updateMedalSelect();
-    calc();
+    window.onload = function() {
+        updateMedalSelect();
+        calc();
+    }
 </script>
 </body>
 </html>
- 
