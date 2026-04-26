@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. ヘッダーとメニューのHTML構造を定義
 const menuHtml = `
 <div class="header-bar">
-    <div class="app-title">VOLFORCE CALC ∇</div> <div class="menu-btn" id="menuBtn">
+    <div class="app-title">VOLFORCE Calc. ver.∇</div> <div class="menu-btn" id="menuBtn">
         <span></span><span></span><span></span>
     </div>
 </div>
