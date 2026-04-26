@@ -5,129 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VOLFORCE早見表 ver.∇</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* 早見表HTMLの <style> 内に追加 */
-body {
-    background-color: var(--bg-deep) !important; /* 共通の背景色を強制 */
-    color: var(--text-main) !important;
-}
+<style>
+    /* 1. style.cssの変数(neon-lime等)を使うように統一 */
+    :root {
+        /* 万が一style.cssが読み込めなかった時のためのバックアップ、不要なら消してOK */
+        --theme-color: var(--neon-lime); 
+    }
 
-/* 目標表示ボックスに共通のネオンカラーを適用 */
-.target-vf-box {
-    border: 1px solid var(--neon-lime);
-    box-shadow: 0 0 10px rgba(176, 255, 46, 0.2);
-}
-        /* 早見表専用のレイアウト調整 */
-        .content {
-            margin-top: 60px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 60px);
-            box-sizing: border-box;
-            gap: 15px; /* 各要素間の余白 */
-            overflow: hidden;
-        }
+    .content {
+        margin-top: 20px;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px);
+        gap: 15px;
+        box-sizing: border-box;
+    }
 
-        /* 他のツールと統一したカードデザイン */
-        .controls-card {
-            background: rgba(18, 18, 18, 0.85); /* 半透明の黒 */
-            border: 1px solid rgba(0, 255, 204, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            backdrop-filter: blur(4px); /* 背景を少しぼかして視認性アップ */
-        }
+    /* 2. ラジオボタンのパネル化（style.cssの変数を使用） */
+    .mode-selector {
+        display: flex;
+        gap: 2px;
+        background: var(--border-color); /* style.cssから参照 */
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+    }
 
-        /* 目標表示エリアを中央に配置し、ツール共通のスタイルに */
-        .target-vf-box {
-            background: rgba(0, 255, 204, 0.05);
-            border: 1px solid var(--theme-color);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 5px;
-        }
+    .mode-selector label {
+        flex: 1;
+        cursor: pointer;
+        background: var(--bg-deep); /* style.cssから参照 */
+        text-align: center;
+        transition: 0.2s;
+    }
 
-        .target-vf-label {
-            font-size: 11px;
-            color: var(--theme-color);
-            letter-spacing: 0.1em;
-            margin-bottom: 5px;
-        }
+    .mode-selector input { display: none; }
 
-        .target-vf-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-            font-family: 'JetBrains Mono', monospace;
-        }
+    .mode-selector .label-box {
+        padding: 10px 5px;
+        display: flex;
+        flex-direction: column;
+        opacity: 0.5;
+        color: var(--text-main);
+    }
 
-        .target-vf-value .decimal {
-            font-size: 1.5rem;
-            opacity: 0.8;
-        }
+    .mode-selector input:checked + .label-box {
+        background: rgba(176, 255, 46, 0.15); /* neon-limeの透明版 */
+        color: var(--neon-lime); /* style.cssから参照 */
+        opacity: 1;
+    }
 
-        /* テーブルコンテナの調整 */
-        .table-container {
-            flex-grow: 1;
-            overflow: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: rgba(18, 18, 18, 0.9);
-            -webkit-overflow-scrolling: touch;
-        }
+    /* 3. テーブルやカードの枠線なども共通変数に統一 */
+    .controls-card {
+        background: var(--panel-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 12px;
-        }
+    .target-vf-box {
+        background: rgba(176, 255, 46, 0.05);
+        border: 1px solid var(--neon-lime);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+    }
 
-        th {
-            position: sticky;
-            top: 0;
-            background: #121212;
-            z-index: 10;
-            padding: 10px 5px;
-            color: var(--theme-color);
-            border-bottom: 2px solid var(--theme-color);
-            font-weight: bold;
-        }
+    th {
+        position: sticky; top: 0; 
+        background: var(--bg-deep);
+        color: var(--neon-lime);
+        border-bottom: 2px solid var(--neon-lime);
+    }
 
-        td {
-            padding: 10px 5px;
-            border-bottom: 1px solid #222;
-            text-align: center;
-            color: #eee;
-        }
+    .level-col {
+        position: sticky; left: 0; 
+        background: #1a1a1a;
+        color: var(--neon-lime);
+        border-right: 2px solid var(--neon-lime) !important;
+    }
 
-        /* Lv.列を左に固定してスクロールしても見やすく */
-        .level-col {
-            position: sticky;
-            left: 0;
-            background: #1a1a1a;
-            z-index: 5;
-            font-weight: bold;
-            color: var(--theme-color);
-            border-right: 2px solid var(--theme-color) !important;
-            width: 60px;
-        }
-
-        /* ステータス別の配色（既存のクラスを使用） */
-        .status-deep { background: rgba(0, 255, 204, 0.3) !important; color: #fff !important; font-weight: bold; }
-        .status-clear { background: rgba(0, 255, 204, 0.15) !important; color: #fff !important; }
-        .status-near { background: rgba(255, 255, 255, 0.05) !important; color: #888 !important; }
-        .status-none { color: #444; }
-
-        .vf-note, .vf-note-special {
-            font-size: 10px;
-            color: #777;
-            margin-top: 5px;
-        }
-        .vf-note-special { color: #ffcc00; font-weight: bold; }
-    </style>
+    /* ステータス色もneon-limeベースに */
+    .status-deep { background: rgba(176, 255, 46, 0.3) !important; font-weight: bold; }
+    .status-clear { background: rgba(176, 255, 46, 0.15) !important; }
+</style>
 </head>
 <body>
 
