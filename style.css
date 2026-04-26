@@ -1,0 +1,25 @@
+/* デザインの根幹となる変数 */
+:root {
+    --bg-deep: #0a0e0a;
+    --army-green: #2d3b2d;
+    --neon-lime: #b0ff2e;
+    --text-main: #e0eee0;
+    --line-sub: rgba(176, 255, 46, 0.1);
+    --panel-bg: rgba(20, 30, 20, 0.85);
+    --border-color: #2d3b2d;
+}
+
+/* 全ページ共通の基本スタイル */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    margin: 0;
+    padding: 10px;
+    background-image: 
+        linear-gradient(var(--line-sub) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+/* 以前お渡しした共通パーツ（.header-bar, .drawer など）のCSSをここに流し込む */
