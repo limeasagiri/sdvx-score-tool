@@ -5,179 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="stylesheet" href="style.css">
 <style>
-    /* 共通変数を利用し、このツール固有のレイアウトのみ定義 */
-    body {
-        font-family: sans-serif;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow: hidden;
-        background: var(--bg-deep); /* style.cssと同期 */
-    }
-
+    /* 追加・修正するスタイルのみ抜粋 */
     .header-controls {
         flex-shrink: 0;
-        padding: 60px 15px 10px; /* メニューと重ならないよう調整 */
-    } 
-    
-    .controls {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        background: var(--panel-bg);
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-    }
-    
-    /* ラジオボタンをパネル化（style.cssの変数を使用） */
-    .mode-selector {
-        display: flex;
-        gap: 2px;
-        background: var(--border-color);
-        border-radius: 6px;
-        overflow: hidden;
-        border: 1px solid var(--border-color);
-    }
-    
-    .mode-selector label {
-        flex: 1;
-        cursor: pointer;
-        background: var(--bg-deep);
-        text-align: center;
-        transition: 0.2s;
-    }
-    
-    .mode-selector input { display: none; }
-    
-    .mode-selector .label-content {
-        padding: 8px 2px;
-        display: flex;
-        flex-direction: column;
-        opacity: 0.5;
-        color: var(--text-main);
-    }
-    
-    .mode-selector input:checked + .label-content {
-        background: rgba(176, 255, 46, 0.15); /* neon-limeの透明版 */
-        color: var(--neon-lime);
-        opacity: 1;
+        padding: 65px 15px 10px;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr; /* 左に操作パネル、右に目標表示 */
+        gap: 15px;
+        align-items: start;
     }
 
+    /* iPad/モバイル等で幅が狭い時は縦並びに */
+    @media (max-width: 768px) {
+        .header-controls {
+            grid-template-columns: 1fr;
+            padding-top: 60px;
+        }
+    }
+
+    .controls {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+    }
+
+    /* 選択肢などを1列に凝縮 */
     .dropdown-row {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
+        gap: 6px;
     }
-    
+
     .control-group label.title {
-        font-size: 10px;
-        color: var(--text-sub);
-        margin-bottom: 4px;
-        display: block;
+        font-size: 9px; /* より小さく */
+        margin-bottom: 2px;
     }
-    
+
     select, input[type="number"] {
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid var(--border-color);
-        background: var(--bg-deep);
-        color: var(--text-main);
-        font-size: 14px;
-        width: 100%;
-        box-sizing: border-box;
+        padding: 4px 6px; /* 以前よりタイトに */
+        font-size: 13px;
+        height: 28px;
     }
-    
-    /* 目標表示エリア */
+
+    /* 目標表示ボックスを右側にフィットさせる */
     .target-vf-box {
-        background: var(--panel-bg);
-        padding: 15px;
-        border-radius: 8px;
-        margin-top: 10px;
-        border: 1px solid var(--neon-lime);
-        text-align: center;
-        box-shadow: 0 0 10px rgba(176, 255, 46, 0.1);
+        margin-top: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: rgba(176, 255, 46, 0.05);
+        border-radius: 4px;
+        border-left: 3px solid var(--neon-lime); /* アクセント */
     }
-    
-    .target-vf-label {
-        font-size: 11px;
-        color: var(--neon-lime);
-        margin-bottom: 4px;
-    }
-    
+
     .target-vf-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: var(--text-main);
-    }
-    
-    .decimal { font-size: 18px; opacity: 0.7; }
-    .vf-note, .vf-note-special { font-size: 10px; margin-top: 5px; }
-    .vf-note-special { color: #ffaa00; font-weight: bold; }
-
-    /* --- テーブルデザイン --- */
-    .table-container {
-        flex-grow: 1;
-        overflow: auto;
-        margin: 0 15px 15px;
-        border: 1px solid var(--border-color);
-        background: var(--panel-bg);
-        border-radius: 8px;
-    }
-    
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    
-    thead th {
-        background: var(--bg-deep);
-        color: var(--neon-lime);
-        padding: 10px 2px;
-        border: 1px solid var(--border-color);
-        position: sticky; top: 0; z-index: 10;
-    }
-    
-    .level-col {
-        font-weight: bold;
-        background: var(--bg-deep) !important;
-        color: var(--neon-lime);
-        position: sticky; left: 0; z-index: 5;
-        border-right: 2px solid var(--neon-lime) !important;
-    }
-    
-    td {
-        padding: 10px 2px;
-        border: 1px solid var(--border-color);
-        color: var(--text-sub);
-        text-align: center;
+        font-size: 32px; /* 数値は目立たせる */
+        line-height: 1.1;
     }
 
-    /* セルカラーの定義（共通変数へ） */
-    .status-deep { background: rgba(176, 255, 46, 0.3) !important; color: var(--text-main) !important; font-weight: bold; }
-    .status-clear { background: rgba(176, 255, 46, 0.15) !important; color: var(--neon-lime) !important; }
-    .status-near { background: rgba(255, 136, 0, 0.1) !important; color: #ff8800 !important; }
+    .mode-selector .label-content {
+        padding: 4px 2px;
+        font-size: 11px;
+    }
 </style>
-</head>
-<body>
 
 <div class="header-controls">
     <div class="controls">
         <div class="mode-selector">
             <label>
                 <input type="radio" name="fmt" value="std" checked onchange="changeFormat()">
-                <div class="label-content"><span>総合VF</span><span style="font-size:8px; opacity:0.7;">(XX.xxx)</span></div>
+                <div class="label-content">総合VF</div>
             </label>
             <label>
                 <input type="radio" name="fmt" value="int" onchange="changeFormat()">
-                <div class="label-content"><span>公式単曲</span><span style="font-size:8px; opacity:0.7;">(XXX)</span></div>
+                <div class="label-content">公式単曲</div>
             </label>
             <label>
                 <input type="radio" name="fmt" value="p1" onchange="changeFormat()">
-                <div class="label-content"><span>Tool</span><span style="font-size:8px; opacity:0.7;">(XX.x)</span></div>
+                <div class="label-content">Tool値</div>
             </label>
         </div>
 
         <div class="dropdown-row">
+            <div class="control-group">
+                <label class="title">目標CLASS / Rank</label>
+                <div style="display: flex; gap: 4px;">
+                    <select id="classSel" onchange="updateRankOptions()" style="flex: 2;">
+                        <option value="1 Sienna">1 Sienna</option>
+                        <option value="2 Cobalt">2 Cobalt</option>
+                        <option value="3 Dandelion">3 Dandelion</option>
+                        <option value="4 Cyan">4 Cyan</option>
+                        <option value="5 Scarlet">5 Scarlet</option>
+                        <option value="6 Coral">6 Coral</option>
+                        <option value="7 Argento">7 Argento</option>
+                        <option value="8 Eldora">8 Eldora</option>
+                        <option value="9 Crimson">9 Crimson</option>
+                        <option value="10 Imperial" selected>10 Imperial</option>
+                    </select>
+                    <select id="rankSel" onchange="updateByDropdown()" style="flex: 1;"></select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="title">目標VF(自由入力)</label>
+                <input type="number" id="customVF" value="20.000" step="0.05" oninput="updateByInput()">
+            </div>
             <div class="control-group">
                 <label class="title">表示スコア範囲</label>
                 <select id="rangeSel" onchange="render()">
@@ -187,7 +123,7 @@
                 </select>
             </div>
             <div class="control-group">
-                <label class="title">クリアメダル</label>
+                <label class="title">参照MEDAL</label>
                 <select id="medalSel" onchange="render()">
                     <option value="1.1">PUC</option>
                     <option value="1.06" selected>UC</option>
@@ -196,31 +132,16 @@
                     <option value="1">EFFECTIVE</option>
                 </select>
             </div>
-            <div class="control-group">
-                <label class="title">クラス</label>
-                <select id="classSel" onchange="updateRankOptions()">
-                    <option value="1 Sienna">1 Sienna</option>
-                    <option value="2 Cobalt">2 Cobalt</option>
-                    <option value="3 Dandelion">3 Dandelion</option>
-                    <option value="4 Cyan">4 Cyan</option>
-                    <option value="5 Scarlet">5 Scarlet</option>
-                    <option value="6 Coral">6 Coral</option>
-                    <option value="7 Argento">7 Argento</option>
-                    <option value="8 Eldora">8 Eldora</option>
-                    <option value="9 Crimson">9 Crimson</option>
-                    <option value="10 Imperial" selected>10 Imperial</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label class="title">ランク</label>
-                <select id="rankSel" onchange="updateByDropdown()"></select>
-            </div>
-            <div class="control-group" style="grid-column: span 2;">
-                <label class="title">目標VF入力</label>
-                <input type="number" id="customVF" value="20.000" step="0.05" min="0" oninput="updateByInput()">
-            </div>
         </div>
     </div>
+
+    <div class="target-vf-box">
+        <div class="target-vf-label" id="targetLabel" style="font-size: 9px;">目標 (総合VF)</div>
+        <div class="target-vf-value" id="dispVF">20<span class="decimal">.000</span></div>
+        <div class="vf-note" id="vfNote" style="opacity: 0.6; font-size: 9px;">VFは0.05刻みで変動します。</div>
+        <div class="vf-note-special" id="specialNote" style="display:none; color: #ffaa00; font-size: 9px;">※特定域到達のため、全上位譜面のプレー推奨</div>
+    </div>
+</div>
 
     <div class="target-vf-box">
         <div class="target-vf-label" id="targetLabel">目標 (総合VF)</div>
