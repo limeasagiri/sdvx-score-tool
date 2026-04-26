@@ -6,67 +6,25 @@
     <title>目標スコア・VF早見表 - VOLFORCE CALC ∇</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* ページ固有の調整：共通デザインを邪魔しない範囲で */
-        .main-container {
-            padding: 70px 10px 20px; /* ヘッダー分の余白 */
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* タブデザインの調整 */
+        .main-container { padding: 70px 10px 20px; max-width: 1200px; margin: 0 auto; }
         .view-tabs { display: flex; gap: 4px; margin-bottom: 15px; }
-        .tab { 
-            flex: 1; text-align: center; background: #1a1a1a; padding: 8px 0; 
-            border: 1px solid var(--army-green); cursor: pointer; font-size: 0.7rem; color: var(--text-main);
-        }
+        .tab { flex: 1; text-align: center; background: #1a1a1a; padding: 8px 0; border: 1px solid var(--army-green); cursor: pointer; font-size: 0.7rem; color: var(--text-main); }
         .tab.active { border-color: var(--neon-lime); background: rgba(176, 255, 46, 0.15); color: var(--neon-lime); font-weight: bold; }
-
-        /* 入力エリアをパネル化 */
-        .header-controls {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            margin-bottom: 20px;
-            clip-path: polygon(0 0, 98% 0, 100% 10%, 100% 100%, 2% 100%, 0 90%);
-        }
-        .controls-inner {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
+        .header-controls { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px; margin-bottom: 20px; clip-path: polygon(0 0, 98% 0, 100% 10%, 100% 100%, 2% 100%, 0 90%); }
+        .controls-inner { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .control-group { display: flex; flex-direction: column; gap: 5px; }
         .control-group .title { font-size: 0.7rem; color: var(--neon-lime); letter-spacing: 1px; }
-        
-        select, input {
-            padding: 8px; background: #000; border: 1px solid var(--army-green);
-            color: white; font-size: 0.9rem; width: 100%; box-sizing: border-box;
-        }
-
-        /* テーブルスタイル */
+        select, input { padding: 8px; background: #000; border: 1px solid var(--army-green); color: white; font-size: 0.9rem; width: 100%; box-sizing: border-box; }
         .table-container { overflow: auto; border: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.3); }
         table { width: 100%; border-collapse: collapse; font-size: 0.75rem; white-space: nowrap; }
         th { background: var(--army-green); color: var(--neon-lime); padding: 10px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--neon-lime); }
         td { padding: 8px; border: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
-        
-        /* LV列の固定 */
-        .level-col {
-            position: sticky; left: 0; background: rgba(10, 20, 10, 0.95);
-            font-weight: bold; z-index: 5; border-right: 1px solid var(--army-green);
-        }
-
-        /* セル内装飾 */
+        .level-col { position: sticky; left: 0; background: rgba(10, 20, 10, 0.95); font-weight: bold; z-index: 5; border-right: 1px solid var(--army-green); }
         .step-hint { font-size: 0.6rem; color: #666; margin-top: 2px; }
         .ref-line { color: #444; font-size: 1.2rem; }
         .cell-content { display: flex; flex-direction: column; line-height: 1.2; }
         .sub-line { font-size: 0.65rem; opacity: 0.6; }
-        
-        /* メダル別配色 */
-        .eff-active { color: #66ff66; }
-        .exc-active { color: #cc33ff; }
-        .max-active { color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
-        .uc-active { color: #ff3399; }
-        .puc-active { color: #ffff00; font-weight: bold; }
-        .rank-aaa-dim { opacity: 0.8; font-style: italic; }
+        .eff-active { color: #66ff66; } .exc-active { color: #cc33ff; } .max-active { color: #ffffff; } .uc-active { color: #ff3399; } .puc-active { color: #ffff00; font-weight: bold; }
         .val-none { color: #444; }
     </style>
 </head>
@@ -75,10 +33,14 @@
 <script src="common.js"></script>
 
 <div class="main-container">
+    <div class="control-group" style="margin-bottom: 5px;">
+        <label class="title">表示・計算方式</label>
+    </div>
+    
     <div class="view-tabs" id="viewTabs">
-        <div class="tab active" data-mode="total" onclick="switchView('total')">TOTAL<br>(XX.xxx)</div>
-        <div class="tab" data-mode="single" onclick="switchView('single')">SINGLE<br>(XXX)</div>
-        <div class="tab" data-mode="tool" onclick="switchView('tool')">TOOL<br>(XX.x)</div>
+        <div class="tab active" data-mode="total" onclick="switchView('total')">総合VF<br>(XX.xxx)</div>
+        <div class="tab" data-mode="single" onclick="switchView('single')">公式単曲<br>(XXX)</div>
+        <div class="tab" data-mode="tool" onclick="switchView('tool')">Tool値<br>(XX.x)</div>
     </div>
 
     <div class="header-controls">
@@ -87,15 +49,13 @@
                 <label class="title">目標VF CLASS / Rank</label>
                 <div style="display: flex; gap: 4px;">
                     <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
-                        <option value="1">1 Sienna</option><option value="2">2 Cobalt</option>
-                        <option value="3">3 Dandelion</option><option value="4">4 Cyan</option>
-                        <option value="5">5 Scarlet</option><option value="6">6 Coral</option>
-                        <option value="7">7 Argento</option><option value="8">8 Eldora</option>
-                        <option value="9">9 Crimson</option><option value="10" selected>10 Imperial</option>
+                        <option value="1">1 Sienna</option><option value="2">2 Cobalt</option><option value="3">3 Dandelion</option>
+                        <option value="4">4 Cyan</option><option value="5">5 Scarlet</option><option value="6">6 Coral</option>
+                        <option value="7">7 Argento</option><option value="8">8 Eldora</option><option value="9 Crimson</option>
+                        <option value="10" selected>10 Imperial</option>
                     </select>
                     <select id="vfClass" onchange="applyRankClass()" style="flex: 1;">
-                        <option value="0" selected>I</option><option value="1">II</option>
-                        <option value="2">III</option><option value="3">IV</option>
+                        <option value="0" selected>I</option><option value="1">II</option><option value="2">III</option><option value="3">IV</option>
                     </select>
                 </div>
             </div>
@@ -103,16 +63,14 @@
             <div class="control-group">
                 <label class="title" id="targetLabel">目標VF(自由入力)</label>
                 <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
-                <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
+                <div class="step-hint" id="stepGuide">目標VFは、0.05刻みで変動します。</div>
             </div>
 
             <div class="control-group">
                 <label class="title">参照MEDAL</label>
                 <select id="medal" onchange="render()">
-                    <option value="PUC">PUC</option><option value="UC">UC</option>
-                    <option value="MAXXIVE" selected>MAXXIVE</option>
-                    <option value="EXCESSIVE">EXCESSIVE</option>
-                    <option value="EFFECTIVE">EFFECTIVE</option>
+                    <option value="PUC">PUC</option><option value="UC">UC</option><option value="MAXXIVE" selected>MAXXIVE</option>
+                    <option value="EXCESSIVE">EXCESSIVE</option><option value="EFFECTIVE">EFFECTIVE</option>
                 </select>
             </div>
         </div>
@@ -127,7 +85,6 @@
 </div>
 
 <script>
-/* ロジック部分は一切変更せず、そのまま実行されます */
 let currentViewMode = 'total';
 const RANK_DATA = {
     "1 Sienna": [0.05, 2.5, 5, 7.5], "2 Cobalt": [10, 10.5, 11, 11.5], "3 Dandelion": [12, 12.5, 13, 13.5],
@@ -156,15 +113,17 @@ function switchView(mode) {
     let val = parseFloat(input.value);
     let totalVF = (prevMode === 'total') ? val : (prevMode === 'single') ? val / 20 : val / 2;
     currentViewMode = mode;
+    
+    // モード切り替え時にテキストとステップ値を日本語で更新
     if (mode === 'total') {
         input.value = totalVF.toFixed(2); input.step = "0.05"; input.max = "24.10";
-        guide.innerText = "STEP: 0.05 increments";
+        guide.innerText = "目標VFは、0.05刻みで変動します。";
     } else if (mode === 'single') {
         input.value = Math.round(totalVF * 20); input.step = "1"; input.max = "482";
-        guide.innerText = "STEP: 1 increments";
+        guide.innerText = "目標VFは、1刻みで変動します。";
     } else if (mode === 'tool') {
         input.value = (totalVF * 2).toFixed(1); input.step = "0.1"; input.max = "48.2";
-        guide.innerText = "STEP: 0.1 increments";
+        guide.innerText = "目標VFは、0.1刻みで変動します。";
     }
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelector(`.tab[data-mode="${mode}"]`).classList.add('active');
