@@ -1,85 +1,138 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="css/style.css"> </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>目標スコア・VF早見表 - VOLFORCE CALC ∇</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ページ固有の調整：共通デザインを邪魔しない範囲で */
+        .main-container {
+            padding: 70px 10px 20px; /* ヘッダー分の余白 */
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* タブデザインの調整 */
+        .view-tabs { display: flex; gap: 4px; margin-bottom: 15px; }
+        .tab { 
+            flex: 1; text-align: center; background: #1a1a1a; padding: 8px 0; 
+            border: 1px solid var(--army-green); cursor: pointer; font-size: 0.7rem; color: var(--text-main);
+        }
+        .tab.active { border-color: var(--neon-lime); background: rgba(176, 255, 46, 0.15); color: var(--neon-lime); font-weight: bold; }
+
+        /* 入力エリアをパネル化 */
+        .header-controls {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            clip-path: polygon(0 0, 98% 0, 100% 10%, 100% 100%, 2% 100%, 0 90%);
+        }
+        .controls-inner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        .control-group .title { font-size: 0.7rem; color: var(--neon-lime); letter-spacing: 1px; }
+        
+        select, input {
+            padding: 8px; background: #000; border: 1px solid var(--army-green);
+            color: white; font-size: 0.9rem; width: 100%; box-sizing: border-box;
+        }
+
+        /* テーブルスタイル */
+        .table-container { overflow: auto; border: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.3); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.75rem; white-space: nowrap; }
+        th { background: var(--army-green); color: var(--neon-lime); padding: 10px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--neon-lime); }
+        td { padding: 8px; border: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
+        
+        /* LV列の固定 */
+        .level-col {
+            position: sticky; left: 0; background: rgba(10, 20, 10, 0.95);
+            font-weight: bold; z-index: 5; border-right: 1px solid var(--army-green);
+        }
+
+        /* セル内装飾 */
+        .step-hint { font-size: 0.6rem; color: #666; margin-top: 2px; }
+        .ref-line { color: #444; font-size: 1.2rem; }
+        .cell-content { display: flex; flex-direction: column; line-height: 1.2; }
+        .sub-line { font-size: 0.65rem; opacity: 0.6; }
+        
+        /* メダル別配色 */
+        .eff-active { color: #66ff66; }
+        .exc-active { color: #cc33ff; }
+        .max-active { color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .uc-active { color: #ff3399; }
+        .puc-active { color: #ffff00; font-weight: bold; }
+        .rank-aaa-dim { opacity: 0.8; font-style: italic; }
+        .val-none { color: #444; }
+    </style>
+</head>
 <body>
 
-<div class="view-tabs" id="viewTabs">
-    <div class="tab active" data-mode="total" onclick="switchView('total')">TOTAL<br>(XX.xxx)</div>
-    <div class="tab" data-mode="single" onclick="switchView('single')">SINGLE<br>(XXX)</div>
-    <div class="tab" data-mode="tool" onclick="switchView('tool')">TOOL<br>(XX.x)</div>
-</div>
+<script src="common.js"></script>
 
-<div class="header-controls">
-    <div class="controls-inner">
-        <div class="control-group">
-            <label class="title">目標VF CLASS / Rank</label>
-            <div style="display: flex; gap: 4px;">
-                <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
-                    <option value="1">1 Sienna</option>
-                    <option value="2">2 Cobalt</option>
-                    <option value="3">3 Dandelion</option>
-                    <option value="4">4 Cyan</option>
-                    <option value="5">5 Scarlet</option>
-                    <option value="6">6 Coral</option>
-                    <option value="7">7 Argento</option>
-                    <option value="8">8 Eldora</option>
-                    <option value="9">9 Crimson</option>
-                    <option value="10" selected>10 Imperial</option>
-                </select>
-                <select id="vfClass" onchange="applyRankClass()" style="flex: 1;">
-                    <option value="0" selected>I</option>
-                    <option value="1">II</option>
-                    <option value="2">III</option>
-                    <option value="3">IV</option>
+<div class="main-container">
+    <div class="view-tabs" id="viewTabs">
+        <div class="tab active" data-mode="total" onclick="switchView('total')">TOTAL<br>(XX.xxx)</div>
+        <div class="tab" data-mode="single" onclick="switchView('single')">SINGLE<br>(XXX)</div>
+        <div class="tab" data-mode="tool" onclick="switchView('tool')">TOOL<br>(XX.x)</div>
+    </div>
+
+    <div class="header-controls">
+        <div class="controls-inner">
+            <div class="control-group">
+                <label class="title">目標VF CLASS / Rank</label>
+                <div style="display: flex; gap: 4px;">
+                    <select id="vfRank" onchange="applyRankClass()" style="flex: 2;">
+                        <option value="1">1 Sienna</option><option value="2">2 Cobalt</option>
+                        <option value="3">3 Dandelion</option><option value="4">4 Cyan</option>
+                        <option value="5">5 Scarlet</option><option value="6">6 Coral</option>
+                        <option value="7">7 Argento</option><option value="8">8 Eldora</option>
+                        <option value="9">9 Crimson</option><option value="10" selected>10 Imperial</option>
+                    </select>
+                    <select id="vfClass" onchange="applyRankClass()" style="flex: 1;">
+                        <option value="0" selected>I</option><option value="1">II</option>
+                        <option value="2">III</option><option value="3">IV</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="title" id="targetLabel">目標VF(自由入力)</label>
+                <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
+                <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
+            </div>
+
+            <div class="control-group">
+                <label class="title">参照MEDAL</label>
+                <select id="medal" onchange="render()">
+                    <option value="PUC">PUC</option><option value="UC">UC</option>
+                    <option value="MAXXIVE" selected>MAXXIVE</option>
+                    <option value="EXCESSIVE">EXCESSIVE</option>
+                    <option value="EFFECTIVE">EFFECTIVE</option>
                 </select>
             </div>
         </div>
+    </div>
 
-        <div class="control-group">
-            <label class="title" id="targetLabel">目標VF(自由入力)</label>
-            <input type="number" id="targetInput" value="20.00" step="0.05" min="0.05" max="24.10" onchange="render()">
-            <div class="step-hint" id="stepGuide">STEP: 0.05 increments</div>
-        </div>
-
-        <div class="control-group">
-            <label class="title">参照MEDAL</label>
-            <select id="medal" onchange="render()">
-                <option value="PUC">PUC</option>
-                <option value="UC">UC</option>
-                <option value="MAXXIVE" selected>MAXXIVE</option>
-                <option value="EXCESSIVE">EXCESSIVE</option>
-                <option value="EFFECTIVE">EFFECTIVE</option>
-            </select>
-        </div>
+    <div class="table-container">
+        <table>
+            <thead><tr id="headerRow"></tr></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
 </div>
 
-<div class="table-container">
-    <table>
-        <thead><tr id="headerRow"></tr></thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-</div>
-
-<script src="js/common.js"></script>
-
 <script>
+/* ロジック部分は一切変更せず、そのまま実行されます */
 let currentViewMode = 'total';
-
-// RANK_DATAは計算機能（applyRankClass）で使うため残しています
 const RANK_DATA = {
-    "1 Sienna": [0.05, 2.5, 5, 7.5],
-    "2 Cobalt": [10, 10.5, 11, 11.5],
-    "3 Dandelion": [12, 12.5, 13, 13.5],
-    "4 Cyan": [14, 14.25, 14.5, 14.75],
-    "5 Scarlet": [15, 15.25, 15.5, 15.75],
-    "6 Coral": [16, 16.25, 16.5, 16.75],
-    "7 Argento": [17, 17.25, 17.5, 17.75],
-    "8 Eldora": [18, 18.25, 18.5, 18.75],
-    "9 Crimson": [19, 19.25, 19.5, 19.75],
+    "1 Sienna": [0.05, 2.5, 5, 7.5], "2 Cobalt": [10, 10.5, 11, 11.5], "3 Dandelion": [12, 12.5, 13, 13.5],
+    "4 Cyan": [14, 14.25, 14.5, 14.75], "5 Scarlet": [15, 15.25, 15.5, 15.75], "6 Coral": [16, 16.25, 16.5, 16.75],
+    "7 Argento": [17, 17.25, 17.5, 17.75], "8 Eldora": [18, 18.25, 18.5, 18.75], "9 Crimson": [19, 19.25, 19.5, 19.75],
     "10 Imperial": [20, 21, 22, 23]
 };
 
@@ -140,30 +193,20 @@ function getLevelList() {
 function getRequired(lv, targetVF, medal, isBaseMedal) {
     const m = MEDAL_COEF[medal];
     const vfAtPUC = Math.floor(lv * 1.05 * 1.1 * 20) / 20;
-    
     if (isBaseMedal && medal === "PUC") {
         if (vfAtPUC >= targetVF) return { rank: "PUC", medal: "PUC", vf: vfAtPUC, priority: 100, isAAA: false };
         return null;
     }
-
     const sScore = Math.ceil((targetVF * 10000000) / (lv * 1.05 * m));
     const aaaPlusScore = Math.ceil((targetVF * 10000000) / (lv * 1.02 * m));
-
     if (isBaseMedal) {
         if (aaaPlusScore >= 9800000 && aaaPlusScore < 9900000) return { rank: (aaaPlusScore === 9800000) ? "AAA+" : aaaPlusScore.toLocaleString(), medal: medal, vf: targetVF, priority: 10, isAAA: true };
         if (sScore >= 9900000 && sScore < 10000000) return { rank: (sScore === 9900000) ? "S" : sScore.toLocaleString(), medal: medal, vf: targetVF, priority: 20, isAAA: false };
-        
-        if (aaaPlusScore < 9800000 && (Math.floor(lv * 1.02 * m * 20) / 20) >= targetVF) {
-            return { rank: "AAA+", medal: medal, vf: Math.floor(lv * 1.02 * m * 0.98 * 20) / 20, priority: 15, isAAA: true };
-        }
-        if (sScore < 9900000 && (Math.floor(lv * 1.05 * m * 20) / 20) >= targetVF) {
-            return { rank: "S", medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 25, isAAA: false };
-        }
+        if (aaaPlusScore < 9800000 && (Math.floor(lv * 1.02 * m * 20) / 20) >= targetVF) return { rank: "AAA+", medal: medal, vf: Math.floor(lv * 1.02 * m * 0.98 * 20) / 20, priority: 15, isAAA: true };
+        if (sScore < 9900000 && (Math.floor(lv * 1.05 * m * 20) / 20) >= targetVF) return { rank: "S", medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 25, isAAA: false };
     } else {
         if (medal === "PUC" && vfAtPUC >= targetVF) return { rank: "PUC", medal: "PUC", vf: vfAtPUC, priority: 100, isAAA: false };
-        if (medal !== "PUC" && (Math.floor(lv * 1.05 * m * 0.99 * 20) / 20) >= targetVF) {
-            return { rank: "S+ " + medal, medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 50, isAAA: false };
-        }
+        if (medal !== "PUC" && (Math.floor(lv * 1.05 * m * 0.99 * 20) / 20) >= targetVF) return { rank: "S+ " + medal, medal: medal, vf: Math.floor(lv * 1.05 * m * 0.99 * 20) / 20, priority: 50, isAAA: false };
     }
     return null;
 }
@@ -217,4 +260,3 @@ window.onload = render;
 </script>
 </body>
 </html>
- 
