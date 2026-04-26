@@ -1,146 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-        :root {
-            --bg-deep: #0a0e0a;
-            --army-green: #2d3b2d;
-            --neon-lime: #b0ff2e;
-            --text-main: #e0eee0;
-            --line-sub: rgba(176, 255, 46, 0.1);
-            --panel-bg: rgba(20, 30, 20, 0.85);
-            --border-color: #2d3b2d;
-            --puc-yellow: #ffff88;
-            --uc-pink: #ff88aa;
-        }
-
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            margin: 0; padding: 8px;
-            background-image: 
-                linear-gradient(var(--line-sub) 1px, transparent 1px),
-                linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
-            background-size: 30px 30px;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* --- UI Components --- */
-        .header-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; border-bottom: 1px solid var(--neon-lime);
-            background: rgba(0, 0, 0, 0.5); padding: 5px 10px;
-        }
-        .app-title { font-size: 15px; font-weight: bold; color: var(--neon-lime); text-shadow: 0 0 10px var(--neon-lime); }
-
-        .menu-btn {
-            width: 34px; height: 34px; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; gap: 4px; cursor: pointer;
-            background: var(--army-green); clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
-        }
-        .menu-btn span { width: 18px; height: 2px; background: var(--neon-lime); }
-
-        .card {
-            background: var(--panel-bg); border: 1px solid var(--army-green);
-            padding: 12px; margin-bottom: 10px;
-            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
-            position: relative;
-        }
-        h3 { font-size: 10px; color: var(--neon-lime); margin: 0 0 12px 0; letter-spacing: 1px; border-left: 3px solid var(--neon-lime); padding-left: 8px; }
-
-        .tab-container { display: flex; gap: 6px; margin-bottom: 10px; }
-        .tab {
-            flex: 1; padding: 12px 5px; background: rgba(45, 59, 45, 0.3); border: 1px solid var(--army-green);
-            color: #889988; font-size: 11px; text-align: center; cursor: pointer; font-weight: bold;
-            clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 0 100%);
-            transition: 0.2s;
-        }
-        .tab.active { background: var(--army-green); color: var(--neon-lime); border-color: var(--neon-lime); }
-
-        input, select {
-            background: #000; color: #fff; border: 1px solid var(--army-green);
-            padding: 8px; font-size: 16px; width: 100%; box-sizing: border-box; outline: none; border-radius: 4px;
-        }
-        input:focus { border-color: var(--neon-lime); }
-        label { font-size: 9px; color: var(--neon-lime); display: block; margin-bottom: 4px; opacity: 0.8; }
-
-        .clear-btn-main { background: var(--army-green); border: 1px solid var(--neon-lime); color: var(--neon-lime); border-radius: 4px; font-size: 9px; padding: 2px 6px; position: absolute; right: 12px; top: 10px; cursor: pointer; }
-
-        /* --- Result Display --- */
-        .result-box { text-align: center; border-left: 4px solid var(--neon-lime); }
-        
-        .dual-display { display: flex; justify-content: space-around; margin-bottom: 15px; border-bottom: 1px dashed var(--army-green); padding-bottom: 10px; }
-        .dual-item { display: flex; flex-direction: column; }
-        .dual-item .label { color: var(--neon-lime); font-size: 9px; margin-bottom: 2px; }
-        .dual-item .val { font-family: monospace; font-size: 18px; color: #fff; font-weight: bold; }
-
-        .vf-mode-tabs { background: rgba(0,0,0,0.4); padding: 4px; border-radius: 4px; margin-bottom: 15px; display: flex; gap: 4px; }
-        .vf-mode-tabs .tab { padding: 6px 2px; font-size: 9px; clip-path: none; height: auto; display: flex; flex-direction: column; }
-        .vf-mode-tabs .vf-sub { font-size: 8px; opacity: 0.6; }
-
-        .vf-display { margin: 10px 0; display: flex; align-items: baseline; justify-content: center; }
-        .vf-display .fixed { font-size: 55px; font-weight: bold; color: #fff; font-family: monospace; line-height: 1; }
-        .vf-display .decimal { font-size: 40px; color: #fff; opacity: 0.9; font-family: monospace; line-height: 1; }
-        
-        .medal-badge {
-            display: inline-block; padding: 4px 15px; border-radius: 2px;
-            font-size: 11px; font-weight: bold; margin-bottom: 10px;
-            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-        }
-        .badge-puc { background: var(--puc-yellow); color: #000; }
-        .badge-uc { background: var(--uc-pink); color: #fff; }
-        .badge-normal { background: var(--army-green); color: var(--neon-lime); }
-
-        /* --- Analysis Table --- */
-        .next-vf-table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px; table-layout: fixed; }
-        .next-vf-table td { padding: 6px 2px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
-        .row-label { color: var(--neon-lime); opacity: 0.6; font-size: 8px; }
-        .row-val { font-family: monospace; color: #fff; font-weight: bold; font-size: 11px; }
-        .row-medal { color: #889988; font-size: 8px; padding-top: 10px !important; }
-        .row-vf-val { color: var(--neon-lime); font-weight: bold; font-size: 11px; font-family: monospace; }
-        .target-note { font-size: 8px; color: #667766; margin-top: 8px; display: none; }
-
-        /* --- Result Detail Table --- */
-        .result-table { width: 100%; font-size: 10px; text-align: center; border-spacing: 1px; border-collapse: separate; }
-        .result-table th { color: var(--neon-lime); padding-bottom: 5px; font-weight: normal; font-size: 9px; }
-        .result-table td { position: relative; background: rgba(0,0,0,0.3); height: 44px; }
-        .result-table input { width: 100%; height: 100%; border: none; background: transparent; text-align: center; font-family: monospace; font-size: 16px; }
-        .label-cell { background: var(--army-green) !important; color: var(--neon-lime) !important; font-weight: bold; font-size: 9px; }
-        .btn-x { position: absolute; right: 2px; top: 2px; width: 14px; height: 14px; background: rgba(255,255,255,0.1); color: #666; font-size: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .disabled-cell { background: rgba(0,0,0,0.6) !important; }
-
-        .hidden { display: none; }
-        .error-msg { color: #ff5555; font-size: 11px; margin-bottom: 10px; font-weight: bold; display: none; }
-
-        /* Drawer Menu */
-        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); display: none; z-index: 999; }
-        .drawer { position: fixed; top: 0; right: -280px; width: 280px; height: 100vh; background: var(--bg-deep); border-left: 2px solid var(--neon-lime); z-index: 1000; transition: 0.3s; padding: 60px 0; }
-        .drawer.open { right: 0; }
-        .menu-item { padding: 15px 25px; border-bottom: 1px solid var(--army-green); color: var(--text-main); text-decoration: none; display: block; font-size: 13px; }
-        .menu-item.current { background: rgba(176, 255, 46, 0.1); color: var(--neon-lime); font-weight: bold; border-left: 4px solid var(--neon-lime); }
-    </style>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="css/style.css"> </head>
 <body>
-
-<div class="header-bar">
-    <div class="app-title">単曲VOLFORCE算出 <small>ver.∇</small></div>
-    <div class="menu-btn" onclick="toggleMenu()">
-        <span></span><span></span><span></span>
-    </div>
-</div>
-
-<div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
-<div class="drawer" id="drawer">
-    <a href="https://otogetool.wixsite.com/vol-calculator" target="_blank" class="menu-item">TACTICAL HUB (TOP)</a>
-    <a href="https://otogetool.wixsite.com/vol-calculator/vol-to-score" target="_blank" class="menu-item">目標スコア算出</a>
-    <a href="https://otogetool.wixsite.com/vol-calculator/vol-hayami" target="_blank" class="menu-item">スコア・VF早見表</a>
-    <div class="menu-item current">単曲VOLFORCE算出</div>
-    <a href="https://otogetool.wixsite.com/vol-calculator/rule" target="_blank" class="menu-item">利用規約</a>
-    <a href="https://otogetool.wixsite.com/vol-calculator/contact" target="_blank" class="menu-item">お問い合わせ</a>
-</div>
 
 <div class="card">
     <h3>CORE DATA</h3>
@@ -262,15 +126,13 @@
     </table>
 </div>
 
+<script src="js/common.js"></script>
+
 <script>
     let inputMode = 'score';
     let vfDisplayMode = 'total';
 
-    function toggleMenu() {
-        document.getElementById('drawer').classList.toggle('open');
-        document.getElementById('overlay').style.display = 
-            document.getElementById('overlay').style.display === 'block' ? 'none' : 'block';
-    }
+    // toggleMenuはcommon.js側で処理するため削除
 
     function clearField(id) { document.getElementById(id).value = ''; }
     function clearAllDetail() {
@@ -398,7 +260,6 @@
         const subIdx = Math.min(3, Math.floor((currentVF.officialInt - cls.b) / cls.s));
         document.getElementById('resRank').innerText = `${cls.n.toUpperCase()} ${roman[subIdx]}`;
 
-        // NEXT分析
         const rankBorders = [{s:9900000,n:"RANK S"},{s:9800000,n:"RANK AAA+"},{s:9700000,n:"RANK AAA"},{s:9500000,n:"RANK AA+"},{s:9300000,n:"RANK AA"}];
         const nextRank = rankBorders.find(b => b.s > score);
         const nextVFScore = Math.ceil(getMinScoreForVF(currentVF.officialInt + 1, lv, medal));
@@ -438,3 +299,4 @@
 </script>
 </body>
 </html>
+ 

@@ -4,154 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volforce Calc. - Tactical Hub</title>
-    <style>
-        :root {
-            --bg-deep: #0a0e0a;
-            --army-green: #2d3b2d;
-            --neon-lime: #b0ff2e;
-            --text-main: #e0eee0;
-            --line-sub: rgba(176, 255, 46, 0.15);
-        }
-
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            margin: 0;
-            background-image: 
-                linear-gradient(var(--line-sub) 1px, transparent 1px),
-                linear-gradient(90deg, var(--line-sub) 1px, transparent 1px);
-            background-size: 40px 40px;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 50%; left: 50%;
-            width: 200%; height: 200%;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(45, 59, 45, 0.2) 0%, transparent 70%);
-            z-index: -1;
-        }
-
-        header {
-            padding: 50px 0;
-            text-align: center;
-            border-bottom: 2px solid var(--neon-lime);
-            background: rgba(0, 0, 0, 0.85);
-            position: relative;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            color: var(--neon-lime);
-            text-shadow: 0 0 15px var(--neon-lime);
-        }
-
-        header::after {
-            content: "▼ SYSTEM ONLINE: VOL-CALC ∇";
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--neon-lime);
-            color: black;
-            padding: 2px 15px;
-            font-weight: bold;
-            font-size: 0.75rem;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 60px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            padding: 0 20px;
-        }
-
-        .tool-card {
-            background: rgba(20, 30, 20, 0.7);
-            border: 1px solid var(--army-green);
-            padding: 25px;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-            transition: 0.2s;
-            clip-path: polygon(0 0, 95% 0, 100% 15%, 100% 100%, 5% 100%, 0 85%);
-        }
-
-        .tool-card:hover {
-            background: rgba(176, 255, 46, 0.1);
-            border-color: var(--neon-lime);
-            transform: translateY(-3px);
-            box-shadow: 0 0 20px rgba(176, 255, 46, 0.2);
-        }
-
-        .tool-card h3 {
-            margin: 0 0 10px 0;
-            color: var(--neon-lime);
-            font-size: 1.1rem;
-            border-left: 3px solid var(--neon-lime);
-            padding-left: 10px;
-        }
-
-        .tool-card p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            line-height: 1.6;
-        }
-
-        footer {
-            margin-top: 100px;
-            background: rgba(0, 0, 0, 0.9);
-            border-top: 1px solid var(--army-green);
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        .footer-links {
-            margin-bottom: 30px;
-        }
-
-        .footer-links a {
-            color: var(--text-main);
-            text-decoration: none;
-            margin: 0 15px;
-            font-size: 0.9rem;
-            transition: 0.3s;
-            border-bottom: 1px solid transparent;
-        }
-
-        .footer-links a:hover {
-            color: var(--neon-lime);
-            border-bottom: 1px solid var(--neon-lime);
-        }
-
-        .copyright {
-            font-size: 0.75rem;
-            line-height: 1.8;
-            opacity: 0.6;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .system-tag {
-            font-size: 0.7rem;
-            color: var(--neon-lime);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-<header>
-    <h1>VOLFORCE CALC ∇</h1>
-</header>
 
 <div class="container">
     <a href="vol-to-score.html" class="tool-card">
@@ -174,9 +29,8 @@
 
 <footer>
     <div class="footer-links">
-        <a href="/rule.html">利用規約</a>
-        <a href="/contact">お問い合わせ</a>
-    </div>
+        <a href="rule.html">利用規約</a>
+        <a href="contact.html">お問い合わせ</a> </div>
     
     <div class="system-tag">DECODER PROTOCOL: SDVX-VII-UNIT</div>
     
@@ -187,6 +41,7 @@
     </div>
 </footer>
 
+<script src="js/common.js"></script>
 </body>
 </html>
  

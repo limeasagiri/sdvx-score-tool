@@ -40,6 +40,7 @@
             justify-content: center;
             align-items: center;
             flex-shrink: 0;
+            position: relative;
         }
 
         header h1 {
@@ -142,6 +143,7 @@
             top: 0;
             z-index: 10;
             border-bottom: 1px solid var(--neon-lime);
+            white-space: nowrap;
         }
 
         td { padding: 8px; border-bottom: 1px solid rgba(176, 255, 46, 0.1); border-right: 1px solid rgba(176, 255, 46, 0.1); text-align: center; }
@@ -231,10 +233,10 @@
         <table id="resultTable">
             <thead>
                 <tr>
-                    <th style="width: 45px;">Lv</th>
-                    <th>EFF</th>
-                    <th>EXC</th>
-                    <th>MAX</th>
+                    <th style="width: 45px;">Lv.</th>
+                    <th>EFFECTIVE</th>
+                    <th>EXCESSIVE</th>
+                    <th>MAXXIVE</th>
                     <th>UC</th>
                     <th>PUC</th>
                 </tr>
@@ -327,14 +329,12 @@ function render() {
 
     let html = '';
     levels.forEach(lv => {
-        // 各項目の計算結果を取得
         const resEff = solveFromSheetFormula(vf, lv, 1.00);
         const resExc = solveFromSheetFormula(vf, lv, 1.02);
         const resMax = solveFromSheetFormula(vf, lv, 1.04);
         const resUc  = solveFromSheetFormula(vf, lv, 1.06);
         const canReachPUC = (lv * 1.05 * 1.10) >= (vf - 0.0001);
         
-        // 数値をテキスト形式に変換
         const formatScore = (val) => (val && val < 10000000) ? val.toLocaleString() : "---";
         const txtEff = formatScore(resEff);
         const txtExc = formatScore(resExc);
@@ -342,12 +342,10 @@ function render() {
         const txtUc  = formatScore(resUc);
         const txtPuc = canReachPUC ? "10,000,000" : "---";
 
-        // すべての項目が "---" であれば、この行そのものを生成しない
         if (txtEff === "---" && txtExc === "---" && txtMax === "---" && txtUc === "---" && txtPuc === "---") {
             return;
         }
 
-        // 行の生成（算出したテキストを適用）
         const pucCls = (canReachPUC && resUc && resUc >= 9950000) ? "puc-active" : "val-low-score";
         
         html += `<tr><td class="level-cell">${lv % 1 === 0 ? lv.toFixed(0) : lv.toFixed(1)}</td>`;

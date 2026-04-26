@@ -1,351 +1,40 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<style>
-    :root {
-        --bg-color: #0f0f0f;
-        --card-bg: #1a1a1a;
-        --accent-color: #00ffcc;
-        --text-main: #e0e0e0;
-        --text-dim: #999;
-        --border-color: #333;
-        --input-bg: #252525;
-    }
-
-    body {
-        font-family: 'Inter', -apple-system, sans-serif;
-        background: var(--bg-color);
-        color: var(--text-main);
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    /* --- タイトルロゴ --- */
-    .app-header {
-        background: rgba(15, 15, 15, 0.9);
-        backdrop-filter: blur(10px);
-        height: 50px;
-        display: flex;
-        align-items: center;
-        padding: 0 15px;
-        border-bottom: 1px solid var(--border-color);
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 1000;
-        box-sizing: border-box;
-    }
-
-    .app-title {
-        font-size: 14px;
-        font-weight: 800;
-        color: var(--accent-color);
-        text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
-        letter-spacing: 0.05em;
-    }
-    
-    /* --- ハンバーガーメニュー --- */
-    .menu-trigger {
-        margin-left: auto;
-        background: var(--input-bg);
-        color: var(--accent-color);
-        border: 1px solid var(--border-color);
-        width: 36px;
-        height: 36px;
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 18px;
-    }
-    
-    .side-menu {
-        position: fixed;
-        top: 0;
-        right: -280px;
-        width: 260px;
-        height: 100%;
-        background: var(--card-bg);
-        z-index: 1002;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        padding: 20px;
-        box-sizing: border-box;
-        border-left: 1px solid var(--border-color);
-        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-    }
-    
-    .side-menu.open { right: 0; }
-    
-    .menu-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.7);
-        display: none;
-        z-index: 1001;
-    }
-    
-    .menu-overlay.show { display: block; }
-    
-    .menu-title {
-        color: var(--accent-color);
-        font-size: 12px;
-        font-weight: 800;
-        margin-bottom: 20px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 10px;
-        letter-spacing: 0.1em;
-    }
-    
-    .menu-list { list-style: none; padding: 0; margin: 0; }
-    .menu-list li { margin-bottom: 10px; }
-    
-    .menu-list a {
-        color: var(--text-main);
-        text-decoration: none;
-        font-size: 13px;
-        display: block;
-        padding: 12px;
-        border-radius: 8px;
-        background: #222;
-        transition: 0.2s;
-    }
-    
-    .menu-list a:hover { background: #2a2a2a; color: var(--accent-color); }
-    .menu-list a.active {
-        background: rgba(0, 255, 204, 0.1);
-        color: var(--accent-color);
-        border-left: 3px solid var(--accent-color);
-        font-weight: bold;
-    }
-
-    /* --- メインコンテンツ --- */
-    .content {
-        margin-top: 50px;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        overflow: hidden;
-    }
-
-    .controls-card {
-        background: var(--card-bg);
-        border-radius: 12px;
-        border: 1px solid var(--border-color);
-        padding: 12px;
-        margin-bottom: 12px;
-    }
-    
-    .mode-selector {
-        display: flex;
-        gap: 6px;
-        background: #111;
-        padding: 4px;
-        border-radius: 8px;
-        margin-bottom: 12px;
-    }
-    
-    .mode-selector label {
-        flex: 1;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 6px 2px;
-        border-radius: 6px;
-        transition: 0.2s;
-    }
-    
-    .mode-selector input { display: none; }
-    
-    .mode-selector span {
-        font-size: 10px;
-        font-weight: bold;
-        color: var(--text-dim);
-        text-align: center;
-    }
-    
-    .mode-selector .unit-desc {
-        font-size: 8px;
-        opacity: 0.6;
-        font-weight: normal;
-    }
-    
-    .mode-selector input:checked + .label-box {
-        background: var(--input-bg);
-        color: var(--accent-color);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    .mode-selector input:checked + .label-box span { color: var(--accent-color); }
-
-    .dropdown-row {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-    
-    .control-group { display: flex; flex-direction: column; gap: 4px; }
-    
-    label.title {
-        font-size: 9px;
-        font-weight: bold;
-        color: var(--text-dim);
-        text-transform: uppercase;
-        padding-left: 2px;
-    }
-    
-    select, input[type="number"] {
-        background: var(--input-bg);
-        color: #fff;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 8px;
-        font-size: 13px;
-        height: 38px;
-        outline: none;
-        transition: 0.2s;
-    }
-    
-    select:focus, input:focus { border-color: var(--accent-color); }
-
-    /* --- 目標表示ボックス --- */
-    .target-vf-box {
-        background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-        padding: 15px;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        border: 1px solid var(--border-color);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .target-vf-box::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 4px;
-        background: var(--accent-color);
-        box-shadow: 0 0 10px var(--accent-color);
-    }
-    
-    .target-vf-label {
-        font-size: 10px;
-        font-weight: bold;
-        color: var(--accent-color);
-        margin-bottom: 4px;
-        letter-spacing: 0.05em;
-    }
-    
-    .target-vf-value {
-        font-size: 28px;
-        font-weight: 900;
-        font-family: 'Courier New', monospace;
-        color: #fff;
-    }
-    
-    .decimal { color: var(--accent-color); opacity: 0.8; font-size: 20px; }
-    
-    .vf-note, .vf-note-special {
-        font-size: 9px;
-        margin-top: 6px;
-        line-height: 1.4;
-    }
-    .vf-note { color: var(--text-dim); display: none; }
-    .vf-note-special { color: #ffaa00; display: none; font-weight: bold; }
-
-    /* --- テーブル --- */
-    .table-container {
-        flex-grow: 1;
-        overflow: auto;
-        border-radius: 12px;
-        border: 1px solid var(--border-color);
-        background: var(--card-bg);
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        text-align: center;
-        table-layout: fixed;
-    }
-    
-    thead th {
-        background: #222;
-        color: var(--accent-color);
-        padding: 10px 2px;
-        font-size: 10px;
-        font-weight: bold;
-        border-bottom: 2px solid var(--border-color);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
-    
-    .level-col {
-        font-weight: 900;
-        background: #151515 !important;
-        color: #fff;
-        position: sticky;
-        left: 0;
-        z-index: 50;
-        width: 40px !important;
-        border-right: 1px solid var(--border-color) !important;
-    }
-    
-    td {
-        padding: 10px 2px;
-        border: 1px solid rgba(255,255,255,0.05);
-        color: #555;
-    }
-
-    /* --- セルステータス --- */
-    .status-deep { color: #fff; font-weight: bold; background: rgba(0, 255, 204, 0.25); } 
-    .status-clear { color: var(--accent-color); font-weight: bold; background: rgba(0, 255, 204, 0.08); } 
-    .status-near { color: #ff8800; font-weight: bold; background: rgba(255, 136, 0, 0.08); } 
-    .status-none { color: #444; }
-
-    @media (max-width: 480px) {
-        .target-vf-value { font-size: 24px; }
-        td { padding: 8px 1px; font-size: 11px; }
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VOLFORCE早見表 ver.∇</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* このページ固有のレイアウト調整のみ残します */
+        .content {
+            margin-top: 60px; /* ヘッダーの高さ分確保 */
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            overflow: hidden;
+            height: calc(100vh - 60px);
+            box-sizing: border-box;
+        }
+        .table-container {
+            flex-grow: 1;
+            overflow: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: center;
+            table-layout: fixed;
+        }
+    </style>
 </head>
 <body>
-
-<header class="app-header">
-    <div class="app-title">VOLFORCE早見表 ver.∇</div>
-    <div class="menu-trigger" onclick="toggleMenu()">☰</div>
-</header>
-
-<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
-<div class="side-menu" id="sideMenu">
-    <div class="menu-title">TOOL MENU</div>
-    <ul class="menu-list">
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator', '_blank')">TOP</a></li>
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/vol-to-score', '_blank')">目標スコア算出</a></li>
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/solo-vol', '_blank')">単曲VOLFORCE算出</a></li>
-        <li><a href="#" class="active" onclick="toggleMenu()">VOLFORCE早見表</a></li>
-        <li style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 12px;">
-            <a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/rule', '_blank')" style="font-size: 11px; opacity: 0.8;">利用規約</a>
-        </li>
-        <li>
-            <a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/contact', '_blank')" style="font-size: 11px; opacity: 0.8;">お問い合わせ</a>
-        </li>
-    </ul>
-</div>
 
 <main class="content">
     <div class="controls-card">
@@ -424,12 +113,10 @@
     </div>
 </main>
 
-<script>
-    function toggleMenu() {
-        document.getElementById('sideMenu').classList.toggle('open');
-        document.getElementById('overlay').classList.toggle('show');
-    }
+<script src="common.js"></script>
 
+<script>
+    // ページ固有のロジック
     let currentStdVF = 20.000;
     const EPS = 0.000001;
 
@@ -496,6 +183,7 @@
                 }
             }
         }
+        // 0.05刻み（内部値1/20）を維持
         return Math.floor(lv * (score / 10000000) * rankFactor * medalFactor * 20 + EPS);
     }
 
@@ -577,7 +265,8 @@
 
         document.getElementById('dispVF').innerHTML = formatValueForMain(targetIntVF, fmt).replace(/\.(\d+)/, '<span class="decimal">.$1</span>');
 
-        let headerHtml = '<th class="level-col">Lv</th>';
+        // ヘッダーを Lv. に修正
+        let headerHtml = '<th class="level-col">Lv.</th>';
         activeScores.forEach(s => { headerHtml += `<th>${s.n}</th>`; });
         document.getElementById('tableHeader').innerHTML = headerHtml;
 
