@@ -6,6 +6,17 @@
     <title>VOLFORCE早見表 ver.∇</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        /* 早見表HTMLの <style> 内に追加 */
+body {
+    background-color: var(--bg-deep) !important; /* 共通の背景色を強制 */
+    color: var(--text-main) !important;
+}
+
+/* 目標表示ボックスに共通のネオンカラーを適用 */
+.target-vf-box {
+    border: 1px solid var(--neon-lime);
+    box-shadow: 0 0 10px rgba(176, 255, 46, 0.2);
+}
         /* 早見表専用のレイアウト調整 */
         .content {
             margin-top: 60px;
