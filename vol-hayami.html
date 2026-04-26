@@ -6,7 +6,7 @@
     <title>VOLFORCE早見表 ver.∇</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* 早見表専用のデザイン調整 */
+        /* 早見表専用のレイアウト調整 */
         .content {
             margin-top: 60px;
             padding: 15px;
@@ -14,48 +14,56 @@
             flex-direction: column;
             height: calc(100vh - 60px);
             box-sizing: border-box;
-            gap: 15px;
+            gap: 15px; /* 各要素間の余白 */
             overflow: hidden;
         }
 
-        /* 目標表示ボックスの強調 */
+        /* 他のツールと統一したカードデザイン */
+        .controls-card {
+            background: rgba(18, 18, 18, 0.85); /* 半透明の黒 */
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            backdrop-filter: blur(4px); /* 背景を少しぼかして視認性アップ */
+        }
+
+        /* 目標表示エリアを中央に配置し、ツール共通のスタイルに */
         .target-vf-box {
             background: rgba(0, 255, 204, 0.05);
             border: 1px solid var(--theme-color);
             border-radius: 12px;
-            padding: 12px;
+            padding: 15px;
             text-align: center;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.1);
+            margin-bottom: 5px;
         }
 
         .target-vf-label {
             font-size: 11px;
             color: var(--theme-color);
-            margin-bottom: 4px;
             letter-spacing: 0.1em;
-            font-weight: bold;
+            margin-bottom: 5px;
         }
 
         .target-vf-value {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            font-family: 'JetBrains Mono', monospace;
             color: #fff;
-            line-height: 1.1;
+            line-height: 1;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .target-vf-value .decimal {
-            font-size: 1.4rem;
-            opacity: 0.7;
+            font-size: 1.5rem;
+            opacity: 0.8;
         }
 
-        /* テーブルのデザイン統一 */
+        /* テーブルコンテナの調整 */
         .table-container {
             flex-grow: 1;
             overflow: auto;
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            background: var(--panel-bg);
+            background: rgba(18, 18, 18, 0.9);
             -webkit-overflow-scrolling: touch;
         }
 
@@ -64,56 +72,50 @@
             border-collapse: separate;
             border-spacing: 0;
             font-size: 12px;
-            table-layout: fixed;
         }
 
         th {
             position: sticky;
             top: 0;
-            background: #1a1a1a;
+            background: #121212;
             z-index: 10;
-            border-bottom: 2px solid var(--theme-color);
-            padding: 10px 4px;
+            padding: 10px 5px;
             color: var(--theme-color);
+            border-bottom: 2px solid var(--theme-color);
             font-weight: bold;
         }
 
         td {
-            padding: 8px 4px;
+            padding: 10px 5px;
             border-bottom: 1px solid #222;
-            border-right: 1px solid #222;
-            color: #ccc;
+            text-align: center;
+            color: #eee;
         }
 
-        /* Lv.列を固定して視認性を確保 */
+        /* Lv.列を左に固定してスクロールしても見やすく */
         .level-col {
             position: sticky;
             left: 0;
             background: #1a1a1a;
+            z-index: 5;
             font-weight: bold;
             color: var(--theme-color);
-            z-index: 5;
-            width: 50px;
             border-right: 2px solid var(--theme-color) !important;
+            width: 60px;
         }
 
-        /* ステータス別の背景色（他のツールと共通の透明度） */
-        .status-deep { background: rgba(0, 255, 204, 0.25); color: #fff; font-weight: bold; }
-        .status-clear { background: rgba(0, 255, 204, 0.15); color: #fff; }
-        .status-near { background: rgba(255, 255, 255, 0.05); color: #888; }
+        /* ステータス別の配色（既存のクラスを使用） */
+        .status-deep { background: rgba(0, 255, 204, 0.3) !important; color: #fff !important; font-weight: bold; }
+        .status-clear { background: rgba(0, 255, 204, 0.15) !important; color: #fff !important; }
+        .status-near { background: rgba(255, 255, 255, 0.05) !important; color: #888 !important; }
         .status-none { color: #444; }
 
         .vf-note, .vf-note-special {
             font-size: 10px;
-            margin-top: 4px;
             color: #777;
+            margin-top: 5px;
         }
-        
         .vf-note-special { color: #ffcc00; font-weight: bold; }
-
-        /* スクロールバーのカスタマイズ（任意） */
-        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
-        .table-container::-webkit-scrollbar-thumb { background: var(--theme-color); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -183,8 +185,8 @@
     <div class="target-vf-box">
         <div class="target-vf-label" id="targetLabel">目標 (総合VF)</div>
         <div class="target-vf-value" id="dispVF">0<span class="decimal">.000</span></div>
-        <div class="vf-note" id="vfNote">※VFは0.05刻みで算出</div>
-        <div class="vf-note-special" id="specialNote" style="display:none;">※特定域到達のため、全上位譜面のプレー推奨</div>
+        <div id="vfNote" class="vf-note">※VFは0.05刻みで算出</div>
+        <div id="specialNote" class="vf-note-special" style="display:none;">※特定域到達のため、全上位譜面のプレー推奨</div>
     </div>
 
     <div class="table-container">
@@ -197,13 +199,9 @@
 
 <script src="common.js"></script>
 <script>
-    /* JSロジックは元のコードをそのまま維持しています。
-       render()関数内で tableHeader の Lv. 表示なども修正済みですので、
-       このHTMLをそのまま適用することでデザインが統一されます。
-    */
-    // (以下、ご提示いただいた script 内容をそのまま使用)
-    let currentStdVF = 20.000;
-    // ...以下省略...
+    /* ロジック部分は一切変更せず、そのまま使用してください */
+    // ... (既存のscript内容) ...
 </script>
 </body>
 </html>
+ 
