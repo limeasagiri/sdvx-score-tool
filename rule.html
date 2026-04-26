@@ -6,7 +6,6 @@
 <title>利用規約 | VOLFORCE Calc.</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-    /* 利用規約ページ専用のレイアウト調整 */
     body {
         font-family: sans-serif;
         padding: 0;
@@ -19,10 +18,11 @@
         color: var(--text-main);
     }
 
+    /* ヘッダーが消える分、上部の余白を再調整 */
     .content-scroll {
         flex-grow: 1;
         overflow-y: auto;
-        padding: 70px 15px 30px; /* ヘッダーとの重なり防止 */
+        padding: 40px 15px 30px; /* 上部余白を適正化 */
         -webkit-overflow-scrolling: touch;
     }
 
@@ -85,11 +85,6 @@
         font-weight: bold;
     }
 
-    strong {
-        color: var(--text-main);
-        border-bottom: 1px solid var(--neon-lime);
-    }
-
     .footer-note {
         margin-top: 40px;
         padding-top: 20px;
@@ -99,36 +94,9 @@
         color: var(--text-sub);
         opacity: 0.6;
     }
-
-    /* メニューのactive表示用 */
-    .menu-list a.active {
-        color: var(--neon-lime) !important;
-        background: rgba(176, 255, 46, 0.1) !important;
-        border-left: 3px solid var(--neon-lime);
-    }
 </style>
 </head>
 <body>
-
-<header class="app-header">
-    <div class="app-title">VOLFORCE Calc.</div>
-    <div class="menu-trigger" onclick="toggleMenu()">☰</div>
-</header>
-
-<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
-<div class="side-menu" id="sideMenu">
-    <div class="menu-title">MENU</div>
-    <ul class="menu-list">
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator', '_blank')">TOP</a></li>
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/vol-to-score', '_blank')">目標スコア算出</a></li>
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/solo-vol', '_blank')">単曲VOLFORCE算出</a></li>
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/chart', '_blank')">VOLFORCE早見表</a></li>
-        <li style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 12px;">
-            <a href="#" onclick="toggleMenu()" class="active">利用規約</a>
-        </li>
-        <li><a onclick="window.open('https://otogetool.wixsite.com/vol-calculator/contact', '_blank')">お問い合わせ</a></li>
-    </ul>
-</div>
 
 <div class="content-scroll">
     <div class="content-container">
@@ -138,22 +106,21 @@
 
         <div class="tos-section">
             <h2>1. サービスの概要</h2>
-            <p>本ツールは、音楽ゲーム「SOUND VOLTEX」におけるVOLFORCE（以下「VF」）の計算およびスコア目安の参照を目的とした非公式の個人開発ツールです。株式会社コナミアミューズメント、およびコナミグループ各社（以下、総称して「公式」）とは一切関係ありません。</p>
+            <p>本ツールは、音楽ゲーム「SOUND VOLTEX」におけるVOLFORCE（以下「VF」）の計算およびスコア目安の参照を目的とした非公式の個人開発ツールです。公式とは一切関係ありません。</p>
         </div>
 
         <div class="tos-section">
             <h2>2. 免責事項</h2>
             <ul>
                 <li>本ツールで算出される数値は有志による解析式に基づいたものであり、ゲーム内での実際の数値と完全に一致することを保証するものではありません。</li>
-                <li>本ツールの利用により生じた直接的、または間接的な損害について、開発者は一切の責任を負いません。</li>
-                <li>公式の組織改編等の事情により、予告なく公開を停止することがあります。</li>
+                <li>本ツールの利用により生じた損害について、開発者は一切の責任を負いません。</li>
             </ul>
         </div>
 
         <div class="tos-section">
             <h2>3. 禁止事項</h2>
             <ul>
-                <li>プログラム（HTML/CSS/JavaScript）の無断転載、二次配布、または悪意のある改ざん。</li>
+                <li>プログラムの無断転載、二次配布、または悪意のある改ざん。</li>
                 <li>公式サービスや他の利用者の迷惑となる行為。</li>
             </ul>
         </div>
@@ -161,8 +128,8 @@
         <div class="tos-section">
             <h2>4. 権利表記</h2>
             <ul>
-                <li>本ツール独自のUIデザインおよびプログラムコードの著作権は、本ツールの開発者に帰属します。</li>
-                <li>「SOUND VOLTEX」のロゴ、画像、楽曲名等の知的財産権は、株式会社コナミアミューズメント（およびその承継法人、グループ各社）に帰属します。</li>
+                <li>本ツール独自のUIおよびコードの著作権は、開発者に帰属します。</li>
+                <li>「SOUND VOLTEX」に関する知的財産権は、株式会社コナミアミューズメントに帰属します。</li>
             </ul>
         </div>
 
