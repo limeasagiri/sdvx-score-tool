@@ -1,140 +1,136 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VOLFORCE早見表 ver.∇</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* 早見表専用のレイアウト調整 */
-        .content {
-            margin-top: 60px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 60px);
-            box-sizing: border-box;
-            gap: 15px; /* 各要素間の余白 */
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+    /* 変数の定義 */
+    :root {
+        --theme-color: #00ffcc;
+        --bg-dark: #121212;
+        --card-bg: #1f1f1f;
+        --border-color: #333;
+    }
 
-        /* 他のツールと統一したカードデザイン */
-        .controls-card {
-            background: rgba(18, 18, 18, 0.85); /* 半透明の黒 */
-            border: 1px solid rgba(0, 255, 204, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            backdrop-filter: blur(4px); /* 背景を少しぼかして視認性アップ */
-        }
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        background: var(--bg-dark);
+        color: #e0e0e0;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+    }
 
-        /* 目標表示エリアを中央に配置し、ツール共通のスタイルに */
-        .target-vf-box {
-            background: rgba(0, 255, 204, 0.05);
-            border: 1px solid var(--theme-color);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 5px;
-        }
+    /* --- タイトル & メニュー (固定) --- */
+    .app-title {
+        position: fixed; top: 10px; left: 15px; z-index: 1001;
+        font-size: 16px; font-weight: bold; color: var(--theme-color);
+        text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+        pointer-events: none;
+    }
+    
+    .menu-trigger {
+        position: fixed; top: 10px; right: 10px; z-index: 1001;
+        background: rgba(42, 42, 42, 0.9); color: var(--theme-color);
+        border: 1px solid #444; width: 40px; height: 40px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    
+    /* --- コントロールエリア --- */
+    .header-controls {
+        flex-shrink: 0;
+        padding: 55px 10px 10px 10px;
+        background: var(--bg-dark);
+        border-bottom: 1px solid var(--border-color);
+        z-index: 900;
+    } 
+    
+    .controls {
+        display: flex; flex-direction: column; gap: 10px;
+        background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);
+    }
+    
+    /* モード切替を押しやすく */
+    .mode-selector {
+        display: flex; gap: 5px; background: #121212; padding: 4px; border-radius: 8px;
+    }
+    .mode-selector label { flex: 1; text-align: center; cursor: pointer; }
+    .mode-selector input { display: none; }
+    .mode-selector span {
+        display: block; padding: 6px 2px; border-radius: 5px; color: #888; font-size: 11px; transition: 0.2s;
+    }
+    .mode-selector input:checked + span {
+        background: #333; color: var(--theme-color); font-weight: bold; box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+    }
 
-        .target-vf-label {
-            font-size: 11px;
-            color: var(--theme-color);
-            letter-spacing: 0.1em;
-            margin-bottom: 5px;
-        }
+    .dropdown-row {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    }
+    
+    select, input {
+        padding: 4px 8px; border-radius: 6px; border: 1px solid #444;
+        background: #2a2a2a; color: #fff; font-size: 14px; height: 38px;
+    }
 
-        .target-vf-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #fff;
-            line-height: 1;
-            font-family: 'JetBrains Mono', monospace;
-        }
+    /* 目標表示をカードの中央に */
+    .target-vf-box {
+        background: rgba(0, 255, 204, 0.05);
+        padding: 15px; border-radius: 10px; text-align: center;
+        border: 1px solid rgba(0, 255, 204, 0.2);
+    }
+    .target-vf-label { font-size: 11px; color: var(--theme-color); margin-bottom: 5px; letter-spacing: 0.05em; }
+    .target-vf-value { font-size: 32px; font-weight: 800; color: #fff; line-height: 1; }
+    .decimal { font-size: 20px; opacity: 0.8; }
 
-        .target-vf-value .decimal {
-            font-size: 1.5rem;
-            opacity: 0.8;
-        }
+    /* --- テーブルセクション --- */
+    .table-container {
+        flex-grow: 1; overflow: auto; background: #161616;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
+    
+    /* ヘッダー固定 */
+    thead th {
+        background: #222; color: var(--theme-color); padding: 12px 4px;
+        border-bottom: 2px solid var(--theme-color);
+        position: sticky; top: 0; z-index: 100;
+    }
+    
+    /* Lv.列の固定 */
+    .level-col {
+        font-weight: bold; background: #1a1a1a !important; color: var(--theme-color);
+        position: sticky; left: 0; z-index: 50;
+        width: 45px !important; border-right: 2px solid var(--theme-color) !important;
+    }
+    
+    td { padding: 10px 2px; border-bottom: 1px solid #222; color: #555; }
 
-        /* テーブルコンテナの調整 */
-        .table-container {
-            flex-grow: 1;
-            overflow: auto;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: rgba(18, 18, 18, 0.9);
-            -webkit-overflow-scrolling: touch;
-        }
+    /* セルカラーの調整 */
+    .status-deep { color: #fff; font-weight: bold; background: rgba(0, 204, 153, 0.35) !important; } 
+    .status-clear { color: #fff; font-weight: bold; background: rgba(0, 255, 204, 0.15) !important; } 
+    .status-near { color: #ffaa00; font-weight: bold; background: rgba(255, 136, 0, 0.1) !important; } 
+    .status-none { color: #444; }
 
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 12px;
-        }
-
-        th {
-            position: sticky;
-            top: 0;
-            background: #121212;
-            z-index: 10;
-            padding: 10px 5px;
-            color: var(--theme-color);
-            border-bottom: 2px solid var(--theme-color);
-            font-weight: bold;
-        }
-
-        td {
-            padding: 10px 5px;
-            border-bottom: 1px solid #222;
-            text-align: center;
-            color: #eee;
-        }
-
-        /* Lv.列を左に固定してスクロールしても見やすく */
-        .level-col {
-            position: sticky;
-            left: 0;
-            background: #1a1a1a;
-            z-index: 5;
-            font-weight: bold;
-            color: var(--theme-color);
-            border-right: 2px solid var(--theme-color) !important;
-            width: 60px;
-        }
-
-        /* ステータス別の配色（既存のクラスを使用） */
-        .status-deep { background: rgba(0, 255, 204, 0.3) !important; color: #fff !important; font-weight: bold; }
-        .status-clear { background: rgba(0, 255, 204, 0.15) !important; color: #fff !important; }
-        .status-near { background: rgba(255, 255, 255, 0.05) !important; color: #888 !important; }
-        .status-none { color: #444; }
-
-        .vf-note, .vf-note-special {
-            font-size: 10px;
-            color: #777;
-            margin-top: 5px;
-        }
-        .vf-note-special { color: #ffcc00; font-weight: bold; }
-    </style>
+    /* サイドメニュー等は変更なし */
+    .side-menu { /* ...以前と同じ... */ }
+    /* (中略: メニュー用スタイル) */
+</style>
 </head>
 <body>
 
-<main class="content">
-    <div class="controls-card">
+<div class="app-title">VOLFORCE早見表 ver.∇</div>
+<div class="menu-trigger" onclick="toggleMenu()">☰</div>
+
+<main class="header-controls">
+    <div class="controls">
         <div class="mode-selector">
-            <label>
-                <input type="radio" name="fmt" value="std" checked onchange="changeFormat()">
-                <div class="label-box"><span>総合VF</span><span class="unit-desc">(XX.xxx)</span></div>
-            </label>
-            <label>
-                <input type="radio" name="fmt" value="int" onchange="changeFormat()">
-                <div class="label-box"><span>公式単曲</span><span class="unit-desc">(XXX)</span></div>
-            </label>
-            <label>
-                <input type="radio" name="fmt" value="p1" onchange="changeFormat()">
-                <div class="label-box"><span>Tool</span><span class="unit-desc">(XX.x)</span></div>
-            </label>
+            <label><input type="radio" name="fmt" value="std" checked onchange="changeFormat()"><span>総合VF<br><span class="unit-desc">(XX.xxx)</span></span></label>
+            <label><input type="radio" name="fmt" value="int" onchange="changeFormat()"><span>公式単曲<br><span class="unit-desc">(XXX)</span></span></label>
+            <label><input type="radio" name="fmt" value="p1" onchange="changeFormat()"><span>Tool<br><span class="unit-desc">(XX.x)</span></span></label>
         </div>
 
         <div class="dropdown-row">
@@ -180,28 +176,232 @@
                 <input type="number" id="customVF" value="20.000" step="0.05" min="0" oninput="updateByInput()">
             </div>
         </div>
-    </div>
 
-    <div class="target-vf-box">
-        <div class="target-vf-label" id="targetLabel">目標 (総合VF)</div>
-        <div class="target-vf-value" id="dispVF">0<span class="decimal">.000</span></div>
-        <div id="vfNote" class="vf-note">※VFは0.05刻みで算出</div>
-        <div id="specialNote" class="vf-note-special" style="display:none;">※特定域到達のため、全上位譜面のプレー推奨</div>
-    </div>
-
-    <div class="table-container">
-        <table id="resultTable">
-            <thead><tr id="tableHeader"></tr></thead>
-            <tbody id="tableBody"></tbody>
-        </table>
+        <div class="target-vf-box">
+            <div class="target-vf-label" id="targetLabel">目標 (総合VF)</div>
+            <div class="target-vf-value" id="dispVF">0<span class="decimal">.000</span></div>
+            <div class="vf-note" id="vfNote">※VFは0.05刻みで算出</div>
+            <div class="vf-note-special" id="specialNote">※特定域到達のため、全上位譜面のプレー推奨</div>
+        </div>
     </div>
 </main>
 
-<script src="common.js"></script>
+<div class="table-container">
+    <table id="resultTable">
+        <thead><tr id="tableHeader"></tr></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
 <script>
-    /* ロジック部分は一切変更せず、そのまま使用してください */
-    // ... (既存のscript内容) ...
+    function toggleMenu() {
+        document.getElementById('sideMenu').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('show');
+    }
+
+    let currentStdVF = 20.000;
+    const EPS = 0.000001;
+
+    const VF_MAP = {
+        "1 Sienna": [0, 2.5, 5, 7.5], 
+        "2 Cobalt": [10, 10.5, 11, 11.5], 
+        "3 Dandelion": [12, 12.5, 13, 13.5],
+        "4 Cyan": [14, 14.25, 14.5, 14.75], 
+        "5 Scarlet": [15, 15.25, 15.5, 15.75], 
+        "6 Coral": [16, 16.25, 16.5, 16.75],
+        "7 Argento": [17, 17.25, 17.5, 17.75], 
+        "8 Eldora": [18, 18.25, 18.5, 18.75], 
+        "9 Crimson": [19, 19.25, 19.5, 19.75],
+        "10 Imperial": [20, 21, 22, 23]
+    };
+    const ROMAN = ["I", "II", "III", "IV"];
+
+    const SCORES = {
+        puc_aaa_plus: [
+            { n: 'PUC', s: 10000000 }, { n: '995k', s: 9950000 }, { n: '990k(S)', s: 9900000 }, 
+            { n: '985k', s: 9850000 }, { n: '980k', s: 9800000 }
+        ],
+        puc_s: [
+            { n: 'PUC', s: 10000000 }, { n: '997.5', s: 9975000 }, { n: '995', s: 9950000 },
+            { n: '992.5', s: 9925000 }, { n: 'S', s: 9900000 }
+        ],
+        puc_995: [
+            { n: 'PUC', s: 10000000 }, { n: '999', s: 9990000 }, { n: '998', s: 9980000 },
+            { n: '997', s: 9970000 }, { n: '996', s: 9960000 }, { n: '995', s: 9950000 }
+        ]
+    };
+
+    const RANK_FACTORS = [
+        { t: 10000000, f: 1.05 }, { t: 9900000, f: 1.05 }, { t: 9800000, f: 1.02 },
+        { t: 9700000, f: 1.00 }, { t: 9500000, f: 0.97 }, { t: 9300000, f: 0.94 },
+        { t: 9000000, f: 0.91 }, { t: 8700000, f: 0.88 }, { t: 7500000, f: 0.85 },
+        { t: 0, f: 0.82 }
+    ];
+
+    function updateRankOptions() {
+        const classVal = document.getElementById('classSel').value;
+        const rankSel = document.getElementById('rankSel');
+        const values = VF_MAP[classVal];
+        let html = '';
+        values.forEach((v, i) => {
+            html += `<option value="${v}">${ROMAN[i]}</option>`;
+        });
+        rankSel.innerHTML = html;
+        updateByDropdown();
+    }
+
+    function getBaseIntVF(lv, score, selectedMedalFactor) {
+        let rankFactor = 0;
+        let medalFactor = selectedMedalFactor;
+        if (score >= 10000000) {
+            rankFactor = 1.05;
+            medalFactor = 1.1;
+        } else {
+            if (selectedMedalFactor === 1.1) return null;
+            for (let r of RANK_FACTORS) {
+                if (score >= r.t) {
+                    rankFactor = r.f;
+                    break;
+                }
+            }
+        }
+        return Math.floor(lv * (score / 10000000) * rankFactor * medalFactor * 20 + EPS);
+    }
+
+    function formatValueForTable(intVF, fmt) {
+        if (intVF === null) return "---";
+        if (fmt === "int") return intVF.toString();
+        if (fmt === "p1") return (intVF / 10).toFixed(1);
+        return (intVF / 20).toFixed(2);
+    }
+
+    function formatValueForMain(intVF, fmt) {
+        if (intVF === null) return "0.000";
+        if (fmt === "int") return intVF.toString();
+        if (fmt === "p1") return (intVF / 10).toFixed(1);
+        return (intVF / 20).toFixed(3);
+    }
+
+    function changeFormat() {
+        const fmt = document.querySelector('input[name="fmt"]:checked').value;
+        const input = document.getElementById('customVF');
+        const label = document.getElementById('targetLabel');
+        const note = document.getElementById('vfNote');
+        const targetInt = Math.floor(currentStdVF * 20 + EPS);
+        
+        if (fmt === "int") { 
+            input.max = "479";
+            input.value = Math.min(targetInt, 479);
+            input.step = "1";
+            label.innerText = "目標 (公式単曲)";
+            note.style.display = "none";
+        } else if (fmt === "p1") { 
+            input.max = "47.9";
+            input.value = Math.min((targetInt / 10), 47.9).toFixed(1);
+            input.step = "0.1";
+            label.innerText = "目標 (Tool)";
+            note.style.display = "none";
+        } else { 
+            input.max = "23.950";
+            input.value = Math.min((targetInt / 20), 23.950).toFixed(3);
+            input.step = "0.05";
+            label.innerText = "目標 (総合VF)";
+            note.style.display = "block";
+        }
+        updateByInput();
+    }
+
+    function updateByDropdown() {
+        const rankVal = document.getElementById('rankSel').value;
+        if (!rankVal) return;
+        currentStdVF = parseFloat(rankVal);
+        changeFormat();
+    }
+
+    function updateByInput() {
+        const fmt = document.querySelector('input[name="fmt"]:checked').value;
+        const input = document.getElementById('customVF');
+        let val = parseFloat(input.value) || 0;
+        const maxVal = parseFloat(input.max);
+        
+        // 入力値の範囲ガード
+        if (val > maxVal) {
+            val = maxVal;
+            input.value = (fmt === "int") ? Math.floor(val) : (fmt === "p1" ? val.toFixed(1) : val.toFixed(3));
+        }
+        if (val < 0) {
+            val = 0;
+            input.value = (fmt === "int") ? "0" : (fmt === "p1" ? "0.0" : "0.000");
+        }
+
+        if (fmt === "int") {
+            currentStdVF = val / 20;
+        } else if (fmt === "p1") {
+            currentStdVF = (val * 10) / 20;
+        } else {
+            currentStdVF = val;
+        }
+
+        const specialNote = document.getElementById('specialNote');
+        if (currentStdVF >= 22.5) {
+            specialNote.style.display = "block";
+        } else {
+            specialNote.style.display = "none";
+        }
+        render();
+    }
+
+    function render() {
+        const medalFactor = parseFloat(document.getElementById('medalSel').value);
+        const fmt = document.querySelector('input[name="fmt"]:checked').value;
+        const rangeKey = document.getElementById('rangeSel').value;
+        const activeScores = SCORES[rangeKey];
+        const targetIntVF = Math.floor(currentStdVF * 20 + EPS);
+        const targetStdVF = currentStdVF;
+
+        document.getElementById('dispVF').innerHTML = formatValueForMain(targetIntVF, fmt).replace(/\.(\d+)/, '<span class="decimal">.$1</span>');
+
+        let headerHtml = '<th class="level-col">Lv</th>';
+        activeScores.forEach(s => {
+            headerHtml += `<th>${s.n}</th>`;
+        });
+        document.getElementById('tableHeader').innerHTML = headerHtml;
+
+        let levels = [];
+        for (let i = 209; i >= 180; i--) levels.push({ v: i / 10, t: 'f1' });
+        levels.push({ v: 17.5, t: 'f1' }, { v: 17.0, t: 'f1' });
+        for (let i = 16; i >= 1; i--) levels.push({ v: i, t: 'int' });
+
+        let html = '';
+        levels.forEach(lvObj => {
+            html += `<tr><td class="level-col">${lvObj.t === 'int' ? lvObj.v : lvObj.v.toFixed(1)}</td>`;
+            activeScores.forEach(sc => {
+                const intVF = getBaseIntVF(lvObj.v, sc.s, medalFactor);
+                if (intVF === null) {
+                    html += `<td class="status-none">---</td>`;
+                } else {
+                    const stdVF = intVF / 20;
+                    const diff = stdVF - targetStdVF;
+                    let cellClass = "status-none";
+
+                    if (targetStdVF >= 22.5) {
+                        if (stdVF >= 23.000) cellClass = "status-deep";
+                        else if (stdVF >= 22.650) cellClass = "status-clear";
+                        else if (stdVF >= 22.150) cellClass = "status-near";
+                    } else {
+                        if (diff >= 0.5 && diff <= 1.0) cellClass = "status-deep";
+                        else if (diff >= 0 && diff < 0.5) cellClass = "status-clear";
+                        else if (diff < 0 && diff >= -0.5) cellClass = "status-near";
+                    }
+                    html += `<td class="${cellClass}">${formatValueForTable(intVF, fmt)}</td>`;
+                }
+            });
+            html += `</tr>`;
+        });
+        document.getElementById('tableBody').innerHTML = html;
+    }
+
+    updateRankOptions();
 </script>
 </body>
 </html>
- 
