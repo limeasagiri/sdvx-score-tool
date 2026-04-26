@@ -66,7 +66,7 @@
                 <input type="number" id="lv" value="18.5" min="1.0" max="20.9" step="0.1" inputmode="decimal" oninput="calc()">
             </div>
             <div style="flex: 1.5;">
-                <label>MEDAL (MANUAL)</label>
+                <label>CLEAR MEDAL</label>
                 <select id="medal" onchange="calc()"></select>
             </div>
         </div>
@@ -74,7 +74,7 @@
 
     <div class="tab-container">
         <div id="tab-score" class="tab active" onclick="switchTab('score')">SCORE INPUT</div>
-        <div id="tab-detail" class="tab" onclick="switchTab('detail')">RESULT DETAIL</div>
+        <div id="tab-detail" class="tab" onclick="switchTab('detail')">RESULT INPUT</div>
     </div>
 
     <div id="section-score" class="card">
@@ -85,7 +85,7 @@
 
     <div id="section-detail" class="card hidden">
         <button class="clear-btn-main" onclick="clearAllDetail()">ALL CLEAR</button>
-        <h3>DETAILED BREAKDOWN</h3>
+        <h3>RESULT</h3>
         <table class="result-table">
             <thead>
                 <tr><th style="width:20%">TYPE</th><th>CHIP</th><th>LONG</th><th>TSUMAMI</th></tr>
@@ -127,7 +127,7 @@
                 <span id="resChain" class="val">---</span>
             </div>
             <div class="dual-item">
-                <span class="label">FINAL SCORE</span>
+                <span class="label">SCORE</span>
                 <span id="resScore" class="val">0</span>
             </div>
         </div>
