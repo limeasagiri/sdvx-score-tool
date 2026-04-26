@@ -47,11 +47,10 @@
     
     .mode-selector {
         display: flex;
-        gap: 2px;
-        background: var(--border-color);
+        gap: 4px; /* ボタン同士に少し隙間を作る */
+        background: transparent;
         border-radius: 4px;
         overflow: hidden;
-        border: 1px solid var(--border-color);
     }
     
     .mode-selector label {
@@ -60,6 +59,8 @@
         background: var(--bg-deep);
         text-align: center;
         transition: 0.2s;
+        border: 1px solid var(--border-color); /* 通常時の枠線 */
+        border-radius: 4px;
     }
     
     .mode-selector input { display: none; }
@@ -71,12 +72,16 @@
         opacity: 0.5;
         color: var(--text-main);
         font-size: 11px;
+        border-radius: 3px;
     }
     
+    /* 選択中のスタイル：枠線を強調 */
     .mode-selector input:checked + .label-content {
         background: rgba(176, 255, 46, 0.15);
         color: var(--neon-lime);
         opacity: 1;
+        outline: 1.5px solid var(--neon-lime); /* 強調枠線 */
+        outline-offset: -1.5px;
     }
 
     .dropdown-row {
